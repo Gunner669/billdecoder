@@ -52,6 +52,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [emailDone, setEmailDone] = useState(false);
   const [showConsent, setShowConsent] = useState(true);
+  const [contributed, setContributed] = useState(false);
   const [timers, setTimers] = useState([]);
 
   function startTimers() {
@@ -79,7 +80,7 @@ export default function Home() {
     clearTimers(timers);
     setPhase("upload"); setAnalysis(null); setError(null); setHint(null);
     setActiveSteps([]); setDoneSteps([]); setShowInsight(false); setInsightVis(false);
-    setEmail(""); setEmailDone(false); setShowConsent(true); setTimers([]);
+    setEmail(""); setEmailDone(false); setShowConsent(true); setContributed(false); setTimers([]);
   }
 
   function handleFile(file) {
@@ -113,6 +114,33 @@ export default function Home() {
     };
     reader.onerror = function() { setError("Could not read file."); setPhase("upload"); };
     reader.readAsDataURL(file);
+  }
+
+  async function contributeData() {
+    try {
+      var pc = analysis.postcodeComparison || {};
+      await fetch("/api/contribute", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          state: analysis.state,
+          retailer: analysis.retailer,
+          tariffType: analysis.tariffType,
+          dailySupplyCharge: analysis.dailySupplyCharge,
+          usageRateSummary: analysis.usageRateSummary,
+          totalBillAmount: analysis.totalBillAmount,
+          estimatedAnnualCost: analysis.estimatedAnnualCost,
+          verdict: analysis.verdict,
+          usageLabel: analysis.usageLabel,
+          solarFitRate: analysis.solarFitRate || "",
+          userAnnualCost: pc.userAnnualCost,
+          stateAvgAnnualCost: pc.stateAvgAnnualCost,
+          bestDealAnnualCost: pc.bestDealAnnualCost
+        })
+      });
+    } catch(e) { /* best-effort */ }
+    setContributed(true);
+    setShowConsent(false);
   }
 
   function fmtCost(n) { return "$" + Number(n).toLocaleString(); }
@@ -362,12 +390,18 @@ export default function Home() {
               </div>
             )}
 
-            {showConsent && (
+            {contributed && (
+              <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:16,padding:20,marginBottom:16,textAlign:"center"}}>
+                <p style={{fontWeight:700,color:"#15803d",fontSize:16}}>Thanks — your anonymised data has been added to the BillDecoder Index.</p>
+              </div>
+            )}
+
+            {showConsent && !contributed && (
               <div style={{background:"#fff",border:"2px solid #bfdbfe",borderRadius:16,padding:"24px 24px 20px",marginBottom:16}}>
                 <p style={{fontWeight:800,fontSize:17,color:"#0f172a",marginBottom:12}}>Help make energy prices fairer for all Australians</p>
                 <p style={{fontSize:14,color:"#475569",lineHeight:1.7,marginBottom:16}}>We would like to add your anonymised bill data to our Australian Bill Decoder Index. Your name, address and account details are never stored.</p>
                 <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                  <button onClick={function(){setShowConsent(false);}} style={{background:"#1e40af",color:"#fff",border:"none",borderRadius:10,padding:"11px 22px",fontWeight:700,fontSize:14,cursor:"pointer"}}>
+                  <button onClick={contributeData} style={{background:"#1e40af",color:"#fff",border:"none",borderRadius:10,padding:"11px 22px",fontWeight:700,fontSize:14,cursor:"pointer"}}>
                     Yes, contribute my anonymised data
                   </button>
                   <button onClick={function(){setShowConsent(false);}} style={{background:"#f8fafc",color:"#64748b",border:"1px solid #e2e8f0",borderRadius:10,padding:"11px 22px",fontWeight:600,fontSize:14,cursor:"pointer"}}>
