@@ -21,12 +21,15 @@ app/
   icon.svg                   # SVG favicon (lightning bolt)
   index/page.js              # BillDecoder Index — aggregate dashboard (Server Component, ISR 5min)
   privacy/page.js            # Privacy Policy page (Server Component)
+  contact/page.js            # Contact page (Server Component wrapper)
+  contact/ContactForm.js     # Contact form (Client Component)
   api/analyze/route.js       # POST: sends bill to Claude, returns structured JSON (22+ fields)
   api/contribute/route.js    # POST: stores anonymised bill data to Vercel KV
   api/notify-signup/route.js     # POST: stores email + bill context for rate alert notifications
   api/notify-send/route.js       # GET: cron-triggered, evaluates subscribers and sends emails via Resend
   api/notify-unsubscribe/route.js # GET: HMAC-verified unsubscribe handler (Spam Act compliance)
   api/deal-update/route.js       # POST: admin endpoint to update per-state best deal prices
+  api/contact/route.js           # POST: stores contact form messages to Vercel KV
   api/index-stats/route.js       # GET: aggregates KV data for the Index
 public/
   robots.txt                     # Allows all crawlers, points to sitemap
@@ -64,6 +67,7 @@ package.json                     # 7 deps: next, react, react-dom, @anthropic-ai
 - `notify:<email>` — individual notification subscription records (email, state, annual cost, tariff type, verdict, subscribedAt). Gets `notifiedAt` added after email sent, or `unsubscribed: true` on unsubscribe. Keyed by email to prevent duplicates
 - `notify_emails` — Redis set of all subscribed email addresses for batch iteration
 - `deal_updates:<state>` — current best deal per state (bestDealAnnualCost, note, updatedAt). Written by admin via `/api/deal-update`, read by `/api/notify-send` to evaluate thresholds
+- `contact_messages` — Redis list of contact form submissions (name, email, message, submittedAt)
 
 ## Environment variables
 
