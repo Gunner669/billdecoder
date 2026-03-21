@@ -5,7 +5,8 @@ Australian electricity bill analysis tool. Users upload a bill (PDF or image), C
 ## Tech stack
 
 - **Frontend:** Next.js 14 (App Router), React 18, inline CSS, Lucide React icons
-- **Backend:** Single API route (`app/api/analyze/route.js`) calling Claude Sonnet 4 via Anthropic SDK
+- **Backend:** Next.js API routes calling Claude Sonnet 4 via Anthropic SDK
+- **Storage:** Vercel KV (Redis) for anonymised bill data
 - **Hosting:** Vercel
 - **AI model:** `claude-sonnet-4-20250514` with vision (reads PDFs and images directly)
 
@@ -13,10 +14,13 @@ Australian electricity bill analysis tool. Users upload a bill (PDF or image), C
 
 ```
 app/
-  layout.js            # Root layout, metadata, lang="en-AU"
-  page.js              # Entire UI — upload, processing animation, results display
-  api/analyze/route.js # POST endpoint: sends bill to Claude, returns structured JSON
-package.json           # 5 dependencies: next, react, react-dom, @anthropic-ai/sdk, lucide-react
+  layout.js                # Root layout, metadata, lang="en-AU"
+  page.js                  # Main UI — upload, processing animation, results display
+  index/page.js            # BillDecoder Index — aggregate dashboard (Server Component)
+  api/analyze/route.js     # POST: sends bill to Claude, returns structured JSON
+  api/contribute/route.js  # POST: stores anonymised bill data to Vercel KV
+  api/index-stats/route.js # GET: aggregates KV data for the Index (also used by page directly)
+package.json               # 6 deps: next, react, react-dom, @anthropic-ai/sdk, @vercel/kv, lucide-react
 ```
 
 ## How it works
@@ -36,6 +40,8 @@ package.json           # 5 dependencies: next, react, react-dom, @anthropic-ai/s
 ## Environment variables
 
 - `ANTHROPIC_API_KEY` — required, set in Vercel dashboard
+- `KV_REST_API_URL` — auto-injected by Vercel KV
+- `KV_REST_API_TOKEN` — auto-injected by Vercel KV
 
 ## Commands
 
@@ -45,16 +51,11 @@ npm run build  # Production build
 npm start      # Start production server
 ```
 
-## Upcoming features
-
-- **Postcode-level comparison bar chart:** Visual comparison of the user's bill against others in their postcode area
-- **Anonymised bill data collection:** Opt-in collection of anonymised bill data with user consent (consent UI exists in `page.js` but backend not yet implemented)
-- **BillDecoder Index:** Aggregate dataset of Australian electricity pricing built from contributed anonymised data
-
 ## Notes
 
 - All styling is inline CSS (no CSS files or framework)
-- The entire UI is a single component in `page.js` with three phases: upload, processing, results
-- Email notification signup and data consent buttons exist in the UI but have no backend integration yet
-- No database — purely stateless AI analysis
+- Main page (`page.js`) is a client component with three phases: upload, processing, results
+- Index page (`index/page.js`) is a Server Component with ISR (revalidates every 5 minutes)
+- Email notification signup exists in the UI but has no backend integration yet
 - No user accounts or authentication
+- Anonymised data stored in Vercel KV excludes all PII (no name, address, postcode, or free-text fields)
