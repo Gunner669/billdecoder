@@ -115,6 +115,8 @@ export default function Home() {
     reader.readAsDataURL(file);
   }
 
+  function fmtCost(n) { return "$" + Number(n).toLocaleString(); }
+
   var step = phase === "upload" ? 1 : phase === "processing" ? 2 : 3;
   var cfg = analysis ? (VERDICT[analysis.verdict] || VERDICT.fair) : VERDICT.fair;
   var insight = hint ? (STATE_INSIGHTS[hint.state] || STATE_INSIGHTS.default) : STATE_INSIGHTS.default;
@@ -260,6 +262,37 @@ export default function Home() {
                 })}
               </div>
             </div>
+
+            {analysis.postcodeComparison && analysis.postcodeComparison.userAnnualCost > 0 && (function() {
+              var pc = analysis.postcodeComparison;
+              var maxCost = Math.max(pc.userAnnualCost, pc.stateAvgAnnualCost, pc.bestDealAnnualCost);
+              var barColor = analysis.verdict === "overcharged" ? "#ef4444" : analysis.verdict === "fair" ? "#f59e0b" : "#10b981";
+              var bars = [
+                {label:"Your bill",value:pc.userAnnualCost,color:barColor},
+                {label:"State avg (DMO)",value:pc.stateAvgAnnualCost,color:"#94a3b8"},
+                {label:"Best available",value:pc.bestDealAnnualCost,color:"#10b981"}
+              ];
+              return (
+                <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
+                  <p style={{fontWeight:700,fontSize:15,marginBottom:14,color:"#0f172a"}}>How your bill compares{pc.postcode ? " — "+pc.postcode+", "+analysis.state : ""}</p>
+                  <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                    {bars.map(function(bar,i) {
+                      var pct = Math.round((bar.value / maxCost) * 100);
+                      return (
+                        <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
+                          <span style={{width:110,fontSize:12,fontWeight:600,color:"#64748b",flexShrink:0,textAlign:"right"}}>{bar.label}</span>
+                          <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28,overflow:"hidden"}}>
+                            <div style={{width:pct+"%",height:28,background:bar.color,borderRadius:6,transition:"width 0.6s ease"}}></div>
+                          </div>
+                          <span style={{width:80,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(bar.value)}/yr</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {pc.referenceNote && <p style={{fontSize:11,color:"#94a3b8",marginTop:12,lineHeight:1.5}}>{pc.referenceNote}</p>}
+                </div>
+              );
+            })()}
 
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:8,color:"#0f172a"}}>Usage profile: <span style={{color:"#10b981"}}>{analysis.usageLabel}</span></p>
