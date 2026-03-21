@@ -4,7 +4,15 @@ export const revalidate = 300;
 
 export const metadata = {
   title: "BillDecoder Index — Australian Electricity Bill Insights",
-  description: "Real aggregate insights from anonymised Australian electricity bills contributed by Australians."
+  description: "Real aggregate insights from anonymised Australian electricity bills contributed by Australians.",
+  openGraph: {
+    title: "BillDecoder Index — Australian Electricity Bill Insights",
+    description: "Average costs, overpayment rates, and tariff breakdowns from real Australian electricity bills.",
+    url: "https://billdecoder.au/index"
+  },
+  alternates: {
+    canonical: "https://billdecoder.au/index"
+  }
 };
 
 function avg(arr) { return arr.length ? Math.round(arr.reduce(function(a, b) { return a + b; }, 0) / arr.length) : 0; }
