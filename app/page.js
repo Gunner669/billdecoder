@@ -143,6 +143,26 @@ export default function Home() {
     setShowConsent(false);
   }
 
+  async function handleNotifySignup() {
+    if (!email.includes("@")) return;
+    try {
+      var pc = analysis.postcodeComparison || {};
+      await fetch("/api/notify-signup", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          email: email,
+          state: analysis.state,
+          userAnnualCost: typeof pc.userAnnualCost === "number" ? pc.userAnnualCost : null,
+          bestDealAnnualCost: typeof pc.bestDealAnnualCost === "number" ? pc.bestDealAnnualCost : null,
+          tariffType: analysis.tariffType || "",
+          verdict: analysis.verdict || ""
+        })
+      });
+    } catch(e) { /* best-effort */ }
+    setEmailDone(true);
+  }
+
   function fmtCost(n) { return "$" + Number(n).toLocaleString(); }
 
   var step = phase === "upload" ? 1 : phase === "processing" ? 2 : 3;
@@ -381,7 +401,7 @@ export default function Home() {
                 <div style={{display:"flex",gap:8,maxWidth:400,margin:"0 auto"}}>
                   <input type="email" placeholder="your@email.com" value={email} onChange={function(e){setEmail(e.target.value);}}
                     style={{flex:1,border:"1px solid #86efac",borderRadius:10,padding:"11px 14px",fontSize:14,background:"#fff",outline:"none",fontFamily:"inherit",color:"#0f172a"}}/>
-                  <button onClick={function(){if(email.includes("@"))setEmailDone(true);}}
+                  <button onClick={handleNotifySignup}
                     style={{background:"#15803d",color:"#fff",border:"none",borderRadius:10,padding:"11px 20px",fontWeight:700,fontSize:14,cursor:"pointer",whiteSpace:"nowrap"}}>
                     Notify me
                   </button>

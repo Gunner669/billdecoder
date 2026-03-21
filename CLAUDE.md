@@ -19,6 +19,7 @@ app/
   index/page.js            # BillDecoder Index — aggregate dashboard (Server Component)
   api/analyze/route.js     # POST: sends bill to Claude, returns structured JSON
   api/contribute/route.js  # POST: stores anonymised bill data to Vercel KV
+  api/notify-signup/route.js # POST: stores email + bill context for rate alert notifications
   api/index-stats/route.js # GET: aggregates KV data for the Index (also used by page directly)
 package.json               # 6 deps: next, react, react-dom, @anthropic-ai/sdk, @vercel/kv, lucide-react
 ```
@@ -56,6 +57,6 @@ npm start      # Start production server
 - All styling is inline CSS (no CSS files or framework)
 - Main page (`page.js`) is a client component with three phases: upload, processing, results
 - Index page (`index/page.js`) is a Server Component with ISR (revalidates every 5 minutes)
-- Email notification signup exists in the UI but has no backend integration yet
+- Email notification signups stored in KV keyed by `notify:<email>` with a `notify_emails` set for iteration
 - No user accounts or authentication
 - Anonymised data stored in Vercel KV excludes all PII (no name, address, postcode, or free-text fields)
