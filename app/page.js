@@ -163,6 +163,7 @@ function Footer() {
         <div style={{display:"flex",gap:20,flexWrap:"wrap",marginBottom:16}}>
           <a href="/" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Analyse your bill</a>
           <a href="/index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
+          <a href="/privacy" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Privacy Policy</a>
           <a href="https://www.energymadeeasy.gov.au" target="_blank" rel="noopener noreferrer" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Energy Made Easy</a>
         </div>
         <div style={{borderTop:"1px solid #f1f5f9",paddingTop:16,display:"flex",flexDirection:"column",gap:6}}>

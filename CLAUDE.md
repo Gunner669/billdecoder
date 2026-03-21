@@ -20,6 +20,7 @@ app/
   BillApp.js                 # Client Component — interactive bill upload, processing animation, results display
   icon.svg                   # SVG favicon (lightning bolt)
   index/page.js              # BillDecoder Index — aggregate dashboard (Server Component, ISR 5min)
+  privacy/page.js            # Privacy Policy page (Server Component)
   api/analyze/route.js       # POST: sends bill to Claude, returns structured JSON (22+ fields)
   api/contribute/route.js    # POST: stores anonymised bill data to Vercel KV
   api/notify-signup/route.js     # POST: stores email + bill context for rate alert notifications
