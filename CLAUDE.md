@@ -24,6 +24,7 @@ app/
   contact/page.js            # Contact page (Server Component wrapper)
   contact/ContactForm.js     # Contact form (Client Component)
   about/page.js              # About page (Server Component)
+  not-found.js               # Custom 404 page
   api/analyze/route.js       # POST: sends bill to Claude, returns structured JSON (22+ fields)
   api/contribute/route.js    # POST: stores anonymised bill data to Vercel KV
   api/notify-signup/route.js     # POST: stores email + bill context for rate alert notifications
