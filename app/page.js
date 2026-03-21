@@ -126,7 +126,7 @@ function States() {
         })}
       </div>
       <div style={{marginTop:20}}>
-        <a href="/index" style={{color:"#3b82f6",fontSize:14,fontWeight:600,textDecoration:"none"}}>View the BillDecoder Index →</a>
+        <a href="/bill-index" style={{color:"#3b82f6",fontSize:14,fontWeight:600,textDecoration:"none"}}>View the BillDecoder Index →</a>
       </div>
     </div>
   );
@@ -162,7 +162,7 @@ function Footer() {
         </div>
         <div style={{display:"flex",gap:20,flexWrap:"wrap",marginBottom:16}}>
           <a href="/" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Analyse your bill</a>
-          <a href="/index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
+          <a href="/bill-index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
           <a href="/privacy" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Privacy Policy</a>
           <a href="/contact" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Contact</a>
           <a href="/about" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>About</a>

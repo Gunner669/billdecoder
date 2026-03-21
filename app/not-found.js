@@ -21,7 +21,7 @@ export default function NotFound() {
         <p style={{fontSize:15,color:"#64748b",lineHeight:1.7,marginBottom:28}}>The page you are looking for does not exist or has been moved.</p>
         <div style={{display:"flex",justifyContent:"center",gap:12,flexWrap:"wrap"}}>
           <a href="/" style={{background:"#0f172a",color:"#fff",borderRadius:10,padding:"13px 28px",fontWeight:700,fontSize:15,textDecoration:"none",display:"inline-block"}}>Analyse your bill</a>
-          <a href="/index" style={{background:"#f8fafc",color:"#0f172a",border:"1px solid #e2e8f0",borderRadius:10,padding:"13px 28px",fontWeight:700,fontSize:15,textDecoration:"none",display:"inline-block"}}>BillDecoder Index</a>
+          <a href="/bill-index" style={{background:"#f8fafc",color:"#0f172a",border:"1px solid #e2e8f0",borderRadius:10,padding:"13px 28px",fontWeight:700,fontSize:15,textDecoration:"none",display:"inline-block"}}>BillDecoder Index</a>
         </div>
       </main>
 

@@ -19,7 +19,7 @@ app/
   page.js                    # Server Component — landing sections (How It Works, Benefits, FAQ, Footer) + imports BillApp
   BillApp.js                 # Client Component — interactive bill upload, processing animation, results display
   icon.svg                   # SVG favicon (lightning bolt)
-  index/page.js              # BillDecoder Index — aggregate dashboard (Server Component, ISR 5min)
+  bill-index/page.js              # BillDecoder Index — aggregate dashboard (Server Component, ISR 5min)
   privacy/page.js            # Privacy Policy page (Server Component)
   contact/page.js            # Contact page (Server Component wrapper)
   contact/ContactForm.js     # Contact form (Client Component)
@@ -28,7 +28,7 @@ app/
   error.js                   # Global error boundary (Client Component)
   global-error.js            # Root layout error boundary (Client Component)
   loading.js                 # Loading skeleton for main page
-  index/loading.js           # Loading skeleton for Index page
+  bill-index/loading.js           # Loading skeleton for Index page
   api/analyze/route.js       # POST: sends bill to Claude, returns structured JSON (22+ fields)
   api/contribute/route.js    # POST: stores anonymised bill data to Vercel KV
   api/notify-signup/route.js     # POST: stores email + bill context for rate alert notifications
@@ -49,7 +49,7 @@ package.json                     # 7 deps: next, react, react-dom, @anthropic-ai
 - `page.js` is a **Server Component** that renders SEO-rich landing content and passes it to `BillApp.js` via the `landingContent` prop (Next.js composition pattern)
 - `BillApp.js` is a **Client Component** (`"use client"`) containing all interactive state (upload, processing, results phases)
 - Landing content only renders during the upload phase; processing and results phases show only the app UI
-- `index/page.js` is a **Server Component** that reads directly from Vercel KV with ISR (revalidates every 5 minutes)
+- `bill-index/page.js` is a **Server Component** that reads directly from Vercel KV with ISR (revalidates every 5 minutes)
 
 ## How it works
 
@@ -69,7 +69,7 @@ package.json                     # 7 deps: next, react, react-dom, @anthropic-ai
 
 ## Vercel KV data
 
-- `bill_submissions` — Redis list of anonymised bill records (state, retailer, tariff, rates, verdict, costs). Written by `/api/contribute`, read by `/api/index-stats` and `/index` page
+- `bill_submissions` — Redis list of anonymised bill records (state, retailer, tariff, rates, verdict, costs). Written by `/api/contribute`, read by `/api/index-stats` and `/bill-index` page
 - `notify:<email>` — individual notification subscription records (email, state, annual cost, tariff type, verdict, subscribedAt). Gets `notifiedAt` added after email sent, or `unsubscribed: true` on unsubscribe. Keyed by email to prevent duplicates
 - `notify_emails` — Redis set of all subscribed email addresses for batch iteration
 - `deal_updates:<state>` — current best deal per state (bestDealAnnualCost, note, updatedAt). Written by admin via `/api/deal-update`, read by `/api/notify-send` to evaluate thresholds

@@ -50,7 +50,7 @@ export default function AboutPage() {
           <div style={{marginBottom:28}}>
             <h2 style={{fontSize:18,fontWeight:800,color:"#0f172a",marginBottom:10}}>Privacy by design</h2>
             <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>Your electricity bill is never stored. It is processed in memory by AI and discarded immediately after your analysis is complete. We cannot retrieve or review your bill after the fact.</p>
-            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>If you choose to contribute anonymised data to the <a href="/index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>, only aggregate figures are stored — no name, address, postcode, or account number. Read our full <a href="/privacy" style={{color:"#3b82f6",fontWeight:600}}>Privacy Policy</a> for details.</p>
+            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>If you choose to contribute anonymised data to the <a href="/bill-index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>, only aggregate figures are stored — no name, address, postcode, or account number. Read our full <a href="/privacy" style={{color:"#3b82f6",fontWeight:600}}>Privacy Policy</a> for details.</p>
           </div>
 
           <div style={{marginBottom:28}}>
@@ -80,7 +80,7 @@ export default function AboutPage() {
         <div style={{maxWidth:680,margin:"0 auto"}}>
           <div style={{display:"flex",gap:20,flexWrap:"wrap",marginBottom:12}}>
             <a href="/" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Analyse your bill</a>
-            <a href="/index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
+            <a href="/bill-index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
             <a href="/privacy" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Privacy Policy</a>
             <a href="/contact" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Contact</a>
             <a href="/about" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>About</a>

@@ -182,7 +182,7 @@ export default function BillApp({ landingContent }) {
           <span style={{color:"#fff",fontWeight:800,fontSize:18}}>BillDecoder<span style={{color:"#10b981"}}>.au</span></span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <a href="/index" style={{color:"#94a3b8",fontSize:13,fontWeight:600,textDecoration:"none"}}>Index</a>
+          <a href="/bill-index" style={{color:"#94a3b8",fontSize:13,fontWeight:600,textDecoration:"none"}}>Index</a>
           {phase === "results" && <button onClick={reset} style={{background:"none",border:"1px solid #334155",borderRadius:8,color:"#94a3b8",padding:"6px 14px",fontSize:13,cursor:"pointer",fontFamily:"inherit"}}>New bill</button>}
         </div>
       </header>
@@ -415,7 +415,7 @@ export default function BillApp({ landingContent }) {
 
             {contributed && (
               <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:16,padding:20,marginBottom:16,textAlign:"center"}}>
-                <p style={{fontWeight:700,color:"#15803d",fontSize:16}}>Thanks — your anonymised data has been added to the <a href="/index" style={{color:"#15803d"}}>BillDecoder Index</a>.</p>
+                <p style={{fontWeight:700,color:"#15803d",fontSize:16}}>Thanks — your anonymised data has been added to the <a href="/bill-index" style={{color:"#15803d"}}>BillDecoder Index</a>.</p>
               </div>
             )}
 

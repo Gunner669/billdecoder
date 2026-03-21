@@ -74,7 +74,7 @@ export default function PrivacyPage() {
               <Li>Solar feed-in rate (if applicable)</Li>
             </ul>
             <P>We <strong>never store</strong> your name, address, postcode, account number, or any text that could identify you personally. The anonymised data cannot be linked back to you.</P>
-            <P>This data is used to generate aggregate insights on the <a href="/index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>.</P>
+            <P>This data is used to generate aggregate insights on the <a href="/bill-index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>.</P>
           </Section>
 
           <Section title="Email notifications (opt-in)">
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
         <div style={{maxWidth:680,margin:"0 auto"}}>
           <div style={{display:"flex",gap:20,flexWrap:"wrap",marginBottom:12}}>
             <a href="/" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Analyse your bill</a>
-            <a href="/index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
+            <a href="/bill-index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
             <a href="/privacy" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Privacy Policy</a>
           </div>
           <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions.</p>
