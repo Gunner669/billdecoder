@@ -25,6 +25,8 @@ app/
   contact/ContactForm.js     # Contact form (Client Component)
   about/page.js              # About page (Server Component)
   not-found.js               # Custom 404 page
+  error.js                   # Global error boundary (Client Component)
+  global-error.js            # Root layout error boundary (Client Component)
   loading.js                 # Loading skeleton for main page
   index/loading.js           # Loading skeleton for Index page
   api/analyze/route.js       # POST: sends bill to Claude, returns structured JSON (22+ fields)
