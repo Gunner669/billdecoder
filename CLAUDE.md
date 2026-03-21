@@ -22,12 +22,16 @@ app/
   index/page.js              # BillDecoder Index — aggregate dashboard (Server Component, ISR 5min)
   api/analyze/route.js       # POST: sends bill to Claude, returns structured JSON (22+ fields)
   api/contribute/route.js    # POST: stores anonymised bill data to Vercel KV
-  api/notify-signup/route.js # POST: stores email + bill context for rate alert notifications
-  api/index-stats/route.js   # GET: aggregates KV data for the Index
+  api/notify-signup/route.js     # POST: stores email + bill context for rate alert notifications
+  api/notify-send/route.js       # GET: cron-triggered, evaluates subscribers and sends emails via Resend
+  api/notify-unsubscribe/route.js # GET: HMAC-verified unsubscribe handler (Spam Act compliance)
+  api/deal-update/route.js       # POST: admin endpoint to update per-state best deal prices
+  api/index-stats/route.js       # GET: aggregates KV data for the Index
 public/
-  robots.txt                 # Allows all crawlers, points to sitemap
-  sitemap.xml                # Lists / and /index
-package.json                 # 6 deps: next, react, react-dom, @anthropic-ai/sdk, @vercel/kv, lucide-react
+  robots.txt                     # Allows all crawlers, points to sitemap
+  sitemap.xml                    # Lists / and /index
+vercel.json                      # Cron job: triggers /api/notify-send weekly (Monday 8am AEST)
+package.json                     # 7 deps: next, react, react-dom, @anthropic-ai/sdk, @vercel/kv, resend, lucide-react
 ```
 
 ## Architecture
@@ -56,12 +60,16 @@ package.json                 # 6 deps: next, react, react-dom, @anthropic-ai/sdk
 ## Vercel KV data
 
 - `bill_submissions` — Redis list of anonymised bill records (state, retailer, tariff, rates, verdict, costs). Written by `/api/contribute`, read by `/api/index-stats` and `/index` page
-- `notify:<email>` — individual notification subscription records (email, state, annual cost, tariff type, verdict). Keyed by email to prevent duplicates
+- `notify:<email>` — individual notification subscription records (email, state, annual cost, tariff type, verdict, subscribedAt). Gets `notifiedAt` added after email sent, or `unsubscribed: true` on unsubscribe. Keyed by email to prevent duplicates
 - `notify_emails` — Redis set of all subscribed email addresses for batch iteration
+- `deal_updates:<state>` — current best deal per state (bestDealAnnualCost, note, updatedAt). Written by admin via `/api/deal-update`, read by `/api/notify-send` to evaluate thresholds
 
 ## Environment variables
 
 - `ANTHROPIC_API_KEY` — required, set in Vercel dashboard
+- `RESEND_API_KEY` — required for email sending, from Resend dashboard
+- `CRON_SECRET` — auto-set by Vercel for cron auth, also used for HMAC unsubscribe tokens
+- `ADMIN_SECRET` — for the `/api/deal-update` admin endpoint
 - `KV_REST_API_URL` — auto-injected by Vercel KV
 - `KV_REST_API_TOKEN` — auto-injected by Vercel KV
 
@@ -81,10 +89,20 @@ npm start      # Start production server
 - `robots.txt` and `sitemap.xml` in `public/`
 - Index page has its own Open Graph metadata and canonical URL
 
+## Email notification system
+
+- **Cron schedule:** Vercel cron triggers `GET /api/notify-send` weekly (Monday 8am AEST / Sunday 10pm UTC)
+- **Threshold logic:** Sends if current best deal saves >= $150/yr vs user's cost AND >= $100/yr better than what they saw at signup
+- **Fallback:** If no deal data exists for a state, "overcharged" users get notified after 30 days with a generic prompt to re-check
+- **One-time send:** Each subscriber is emailed at most once (`notifiedAt` flag prevents re-sends)
+- **Unsubscribe:** HMAC-verified link in every email, removes from set and flags record
+- **Admin deal updates:** `POST /api/deal-update` with `Authorization: Bearer <ADMIN_SECRET>` to set per-state best deal prices
+- **Email service:** Resend (requires domain DNS verification for `billdecoder.au`)
+
 ## Notes
 
 - All styling is inline CSS (no CSS files or framework)
-- Email notification signup stores to KV but email sending is not yet implemented (future: cron job or external trigger)
 - No user accounts or authentication
 - Anonymised bill data excludes all PII (no name, address, postcode, or free-text fields)
 - Email notification records do contain PII (email address) — stored separately from anonymous bill data with no cross-linking
+- Resend free tier: 100 emails/day, 3000/month
