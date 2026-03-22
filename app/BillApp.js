@@ -52,7 +52,9 @@ var TERM_TIPS = {
   "off-peak":"Cheaper time periods, usually overnight and weekends.",
   "shoulder":"Mid-price periods between peak and off-peak, common on Time of Use tariffs.",
   "peak":"The most expensive time period, usually weekday afternoons and evenings.",
-  "demand charge":"A fee based on your highest usage at any point, common for business accounts."
+  "demand charge":"A fee based on your highest usage at any point, common for business accounts.",
+  "usage rate":"The price you pay per kilowatt-hour (kWh) of electricity you actually use.",
+  "daily supply charge":"The daily fee just for being connected, regardless of how much electricity you use."
 };
 
 function tipFor(text) {
@@ -160,9 +162,9 @@ export default function BillApp({ landingContent }) {
           verdict: analysis.verdict,
           usageLabel: analysis.usageLabel,
           solarFitRate: analysis.solarFitRate || "",
-          userAnnualCost: pc.userAnnualCost,
-          stateAvgAnnualCost: pc.stateAvgAnnualCost,
-          bestDealAnnualCost: pc.bestDealAnnualCost
+          userAnnualCost: pc.userAnnualCost || pc.userCost,
+          stateAvgAnnualCost: pc.stateAvgAnnualCost || pc.stateAvgCost,
+          bestDealAnnualCost: pc.bestDealAnnualCost || pc.bestDealCost
         })
       });
     } catch(e) { /* best-effort */ }
@@ -180,8 +182,8 @@ export default function BillApp({ landingContent }) {
         body: JSON.stringify({
           email: email,
           state: analysis.state,
-          userAnnualCost: typeof pc.userAnnualCost === "number" ? pc.userAnnualCost : null,
-          bestDealAnnualCost: typeof pc.bestDealAnnualCost === "number" ? pc.bestDealAnnualCost : null,
+          userAnnualCost: typeof (pc.userAnnualCost || pc.userCost) === "number" ? (pc.userAnnualCost || pc.userCost) : null,
+          bestDealAnnualCost: typeof (pc.bestDealAnnualCost || pc.bestDealCost) === "number" ? (pc.bestDealAnnualCost || pc.bestDealCost) : null,
           tariffType: analysis.tariffType || "",
           verdict: analysis.verdict || ""
         })
@@ -330,19 +332,19 @@ export default function BillApp({ landingContent }) {
               <div style={{background:"linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%)",borderRadius:20,padding:"28px 28px 24px",marginBottom:16,position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,right:0,width:120,height:120,background:"#10b981",borderRadius:"0 0 0 120px",opacity:0.1}}></div>
                 <p style={{fontSize:13,fontWeight:700,color:"#10b981",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Your data can make a difference</p>
-                <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help us build Australia's most honest picture of electricity pricing</p>
-                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:6}}>Right now, energy companies know exactly what everyone pays. Consumers don't. That's how overcharging stays hidden.</p>
-                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>By contributing your anonymised bill data, you help build the <strong style={{color:"#fff"}}>BillDecoder Index</strong> — a free, public dataset that shows what Australians actually pay for electricity, state by state. The more people contribute, the harder it becomes for retailers to quietly overcharge.</p>
+                <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help shine a light on what Australians really pay for electricity</p>
+                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:6}}>Energy companies have detailed data on what every customer pays. Consumers have almost none. That imbalance is how overcharging stays hidden and goes unchallenged.</p>
+                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>By sharing your bill data, you help us build the <strong style={{color:"#fff"}}>BillDecoder Index</strong> — a powerful dataset of real electricity pricing across Australia. This data is used to hold energy retailers accountable, drive fairer pricing, and inform the organisations working to protect consumers. The more people share, the clearer the picture becomes.</p>
                 <div style={{background:"rgba(255,255,255,0.08)",borderRadius:12,padding:"12px 16px",marginBottom:16}}>
                   <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
-                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Completely anonymised</span>
-                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} No name or address stored</span>
+                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Your name and account details are never included</span>
+                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Only pricing data is shared</span>
                     <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Takes one click</span>
                   </div>
                 </div>
                 <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                   <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 24px",fontWeight:700,fontSize:15,cursor:"pointer"}}>
-                    Yes, contribute my data
+                    Yes, share my bill data
                   </button>
                   <button onClick={function(){setShowConsent(false);}} style={{background:"transparent",color:"#64748b",border:"1px solid #334155",borderRadius:10,padding:"13px 24px",fontWeight:600,fontSize:14,cursor:"pointer"}}>
                     No thanks
@@ -354,15 +356,15 @@ export default function BillApp({ landingContent }) {
             {contributed && (
               <div style={{background:"#f0fdf4",border:"2px solid #86efac",borderRadius:16,padding:"20px 24px",marginBottom:16,textAlign:"center"}}>
                 <p style={{fontWeight:800,fontSize:17,color:"#15803d",marginBottom:4}}>Thank you — you are making a difference</p>
-                <p style={{fontSize:13,color:"#166534"}}>Your anonymised data has been added to the <a href="/bill-index" style={{color:"#15803d",fontWeight:700}}>BillDecoder Index</a>.</p>
+                <p style={{fontSize:13,color:"#166534"}}>Your bill data has been added to the <a href="/bill-index" style={{color:"#15803d",fontWeight:700}}>BillDecoder Index</a>.</p>
               </div>
             )}
 
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:12,color:"#0f172a"}}>Your bill, decoded</p>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10}}>
-                {[{l:"Tariff type",v:analysis.tariffType,n:analysis.peakOffPeakTimes,t:true},{l:"Usage rate",v:analysis.usageRateSummary},{l:"Daily supply charge",v:analysis.dailySupplyCharge,n:analysis.supplyChargeNote,t:true},{l:"Retailer",v:analysis.retailer}].map(function(f,i){
-                  var tip = f.t ? tipFor(f.v || f.l) : null;
+                {[{l:"Tariff type",v:analysis.tariffType,n:analysis.peakOffPeakTimes,t:true},{l:"Usage rate",v:analysis.usageRateSummary,t:true},{l:"Daily supply charge",v:analysis.dailySupplyCharge,n:analysis.supplyChargeNote,t:true},{l:"Retailer",v:analysis.retailer}].map(function(f,i){
+                  var tip = f.t ? (tipFor(f.v) || tipFor(f.l)) : null;
                   return (
                     <div key={i} style={{background:"#f8fafc",borderRadius:10,padding:"12px 14px"}}>
                       <p style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>{f.l}</p>
@@ -375,19 +377,23 @@ export default function BillApp({ landingContent }) {
               </div>
             </div>
 
-            {analysis.postcodeComparison && analysis.postcodeComparison.userAnnualCost > 0 && (function() {
+            {analysis.postcodeComparison && (analysis.postcodeComparison.userCost > 0 || analysis.postcodeComparison.userAnnualCost > 0) && (function() {
               var pc = analysis.postcodeComparison;
-              var maxCost = Math.max(pc.userAnnualCost, pc.stateAvgAnnualCost, pc.bestDealAnnualCost);
+              var userVal = pc.userCost || pc.userAnnualCost;
+              var avgVal = pc.stateAvgCost || pc.stateAvgAnnualCost;
+              var bestVal = pc.bestDealCost || pc.bestDealAnnualCost;
+              var period = pc.periodLabel || "Annual";
+              var maxCost = Math.max(userVal, avgVal, bestVal);
               var barColor = analysis.verdict === "overcharged" ? "#ef4444" : analysis.verdict === "fair" ? "#f59e0b" : "#10b981";
               var bars = [
-                {label:"Your bill",value:pc.userAnnualCost,color:barColor},
-                {label:"State avg (DMO)",value:pc.stateAvgAnnualCost,color:"#94a3b8"},
-                {label:"Best available",value:pc.bestDealAnnualCost,color:"#10b981"}
+                {label:"Your bill",value:userVal,color:barColor},
+                {label:"State avg (DMO)",value:avgVal,color:"#94a3b8"},
+                {label:"Best available",value:bestVal,color:"#10b981"}
               ];
               return (
                 <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
                   <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#0f172a"}}>How your bill compares{pc.postcode ? " \u2014 "+pc.postcode+", "+analysis.state : ""}</p>
-                  <p style={{fontSize:11,color:"#94a3b8",fontStyle:"italic",marginBottom:14}}>All figures are annual estimates. DMO = Default Market Offer, the government-set price cap for your area.</p>
+                  <p style={{fontSize:11,color:"#94a3b8",fontStyle:"italic",marginBottom:14}}>{period} figures. DMO = Default Market Offer, the government-set price cap for your area.</p>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>
                     {bars.map(function(bar,i) {
                       var pct = Math.round((bar.value / maxCost) * 100);
@@ -397,7 +403,7 @@ export default function BillApp({ landingContent }) {
                           <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28,overflow:"hidden"}}>
                             <div style={{width:pct+"%",height:28,background:bar.color,borderRadius:6,transition:"width 0.6s ease"}}></div>
                           </div>
-                          <span style={{width:80,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(bar.value)}/yr</span>
+                          <span style={{width:80,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(bar.value)}</span>
                         </div>
                       );
                     })}
