@@ -50,12 +50,12 @@ export default function AboutPage() {
           <div style={{marginBottom:28}}>
             <h2 style={{fontSize:18,fontWeight:800,color:"#0f172a",marginBottom:10}}>Privacy by design</h2>
             <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>Your electricity bill is never stored. It is processed in memory by AI and discarded immediately after your analysis is complete. We cannot retrieve or review your bill after the fact.</p>
-            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>If you choose to contribute anonymised data to the <a href="/bill-index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>, only aggregate figures are stored — no name, address, postcode, or account number. Read our full <a href="/privacy" style={{color:"#3b82f6",fontWeight:600}}>Privacy Policy</a> for details.</p>
+            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>If you choose to share your bill data with the <a href="/bill-index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>, your name, address and account details are stripped out — only pricing data is kept. Read our full <a href="/privacy" style={{color:"#3b82f6",fontWeight:600}}>Privacy Policy</a> for details.</p>
           </div>
 
           <div style={{marginBottom:28}}>
             <h2 style={{fontSize:18,fontWeight:800,color:"#0f172a",marginBottom:10}}>The BillDecoder Index</h2>
-            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>When users opt in, their anonymised bill data contributes to the BillDecoder Index — a growing dataset of real Australian electricity pricing. The Index shows average costs by state, overpayment rates, verdict breakdowns, and the most common tariff types and retailers across the country.</p>
+            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>When users opt in, their de-identified bill data contributes to the BillDecoder Index — a growing dataset of real Australian electricity pricing. The Index shows average costs by state, overpayment rates, verdict breakdowns, and the most common tariff types and retailers across the country.</p>
             <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>The goal is to make electricity pricing more transparent for all Australians, not just those who upload their bills.</p>
           </div>
 

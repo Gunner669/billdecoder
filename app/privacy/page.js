@@ -61,8 +61,8 @@ export default function PrivacyPage() {
             </ul>
           </Section>
 
-          <Section title="Anonymised bill data (opt-in)">
-            <P>After receiving your analysis, you may choose to contribute anonymised data to the BillDecoder Index. This is entirely optional.</P>
+          <Section title="Bill data sharing (opt-in)">
+            <P>After receiving your analysis, you may choose to share your bill data with the BillDecoder Index. This is entirely optional.</P>
             <P>If you opt in, we store only:</P>
             <ul style={{paddingLeft:20,marginBottom:10}}>
               <Li>State (e.g. NSW, VIC)</Li>
@@ -73,7 +73,7 @@ export default function PrivacyPage() {
               <Li>Usage label (e.g. Evening Peaker)</Li>
               <Li>Solar feed-in rate (if applicable)</Li>
             </ul>
-            <P>We <strong>never store</strong> your name, address, postcode, account number, or any text that could identify you personally. The anonymised data cannot be linked back to you.</P>
+            <P>We <strong>never store</strong> your name, address, postcode, account number, or any text that could identify you personally. Your name, address and account details are stripped out — only pricing data is kept. This data cannot be linked back to you.</P>
             <P>This data is used to generate aggregate insights on the <a href="/bill-index" style={{color:"#3b82f6",fontWeight:600}}>BillDecoder Index</a>.</P>
           </Section>
 
@@ -85,12 +85,12 @@ export default function PrivacyPage() {
               <Li>Your state</Li>
               <Li>Your estimated annual cost and tariff type at the time of signup</Li>
             </ul>
-            <P>We will send you <strong>at most one email</strong>. Every email includes an unsubscribe link. Your email is stored separately from anonymised bill data and cannot be cross-linked.</P>
+            <P>We will send you <strong>at most one email</strong>. Every email includes an unsubscribe link. Your email is stored separately from bill pricing data and cannot be cross-linked.</P>
             <P>We use <a href="https://resend.com" target="_blank" rel="noopener noreferrer" style={{color:"#3b82f6",fontWeight:600}}>Resend</a> to deliver emails.</P>
           </Section>
 
           <Section title="Data storage and security">
-            <P>All stored data (anonymised bill contributions and email subscriptions) is held in Vercel KV, a managed Redis database hosted by Vercel. Data is encrypted in transit and at rest.</P>
+            <P>All stored data (de-identified bill contributions and email subscriptions) is held in Vercel KV, a managed Redis database hosted by Vercel. Data is encrypted in transit and at rest.</P>
             <P>We do not sell, share, or provide your data to any third party, except:</P>
             <ul style={{paddingLeft:20,marginBottom:10}}>
               <Li><strong>Anthropic</strong> — your bill is sent to Claude AI for analysis (processed in memory, not stored by Anthropic for training).</Li>

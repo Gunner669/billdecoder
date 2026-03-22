@@ -8,7 +8,7 @@ var FAQ_DATA = [
   {q:"What file formats can I upload?",a:"PDF, PNG, JPEG, and WebP files up to 12MB. You can upload the PDF from your retailer, a photo of a paper bill, or a screenshot."},
   {q:"How accurate is the analysis?",a:"BillDecoder.au uses AI to read your bill and compare it against current market offers. Savings estimates are indicative. Always read the Basic Plan Information Document (BPID) before switching retailers."},
   {q:"How does BillDecoder.au make money?",a:"It does not, currently. BillDecoder.au is an independent project. We do not receive commissions or payments from any energy retailer."},
-  {q:"What is the BillDecoder Index?",a:"The BillDecoder Index is an aggregate view of anonymised electricity bill data contributed by users who opt in. It shows average costs, overpayment rates, and tariff breakdowns across Australian states."}
+  {q:"What is the BillDecoder Index?",a:"The BillDecoder Index is built from real electricity bill data shared by users who opt in. Your name and account details are never included — only pricing data is kept. It shows average costs, overpayment rates, and tariff breakdowns across Australian states."}
 ];
 
 var FAQ_JSONLD = {

@@ -67,7 +67,7 @@ export default function IndexDashboard() {
         </div>
         <p style={{fontWeight:700,fontSize:18,color:"#0f172a",marginBottom:6}}>No data yet</p>
         <p style={{color:"#64748b",fontSize:14,marginBottom:20,lineHeight:1.7,maxWidth:360,margin:"0 auto 20px"}}>
-          The BillDecoder Index is built from anonymised bill data contributed by users. Be the first to contribute.
+          The BillDecoder Index is built from real bill data shared by users. Your name and account details are never included. Be the first to contribute.
         </p>
         <a href="/" style={{background:"#0f172a",color:"#fff",borderRadius:12,padding:"13px 32px",fontWeight:700,fontSize:15,display:"inline-block",textDecoration:"none"}}>Analyse your bill</a>
       </div>
@@ -218,12 +218,12 @@ export default function IndexDashboard() {
 
       <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:16,padding:"24px 24px 20px",marginBottom:16,textAlign:"center"}}>
         <p style={{fontWeight:800,fontSize:18,color:"#0f172a",marginBottom:6}}>Want to contribute?</p>
-        <p style={{fontSize:14,color:"#166534",marginBottom:18,lineHeight:1.7}}>Analyse your bill and opt in to add your anonymised data to the Index.</p>
+        <p style={{fontSize:14,color:"#166534",marginBottom:18,lineHeight:1.7}}>Analyse your bill and opt in to add your data to the Index. Only pricing data is kept.</p>
         <a href="/" style={{background:"#0f172a",color:"#fff",borderRadius:12,padding:"13px 32px",fontWeight:700,fontSize:15,display:"inline-block",textDecoration:"none"}}>Analyse your bill</a>
       </div>
 
       <div style={{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:12,padding:16,marginBottom:20}}>
-        <p style={{fontSize:11,color:"#94a3b8",lineHeight:1.7}}>Based on {total} anonymised bill submission{total !== 1 ? "s" : ""} from consenting users. Data is indicative only and does not represent all Australian households. BillDecoder.au is independent and does not receive commissions from any retailer.</p>
+        <p style={{fontSize:11,color:"#94a3b8",lineHeight:1.7}}>Based on {total} de-identified bill submission{total !== 1 ? "s" : ""} from consenting users. Data is indicative only and does not represent all Australian households. BillDecoder.au is independent and does not receive commissions from any retailer.</p>
       </div>
     </div>
   );

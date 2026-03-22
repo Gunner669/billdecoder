@@ -2,7 +2,7 @@ import IndexDashboard from "./IndexDashboard";
 
 export const metadata = {
   title: "BillDecoder Index — Australian Electricity Bill Insights",
-  description: "Real aggregate insights from anonymised Australian electricity bills contributed by Australians.",
+  description: "Real aggregate insights from Australian electricity bills shared by everyday Australians.",
   openGraph: {
     title: "BillDecoder Index — Australian Electricity Bill Insights",
     description: "Average costs, overpayment rates, and tariff breakdowns from real Australian electricity bills.",
@@ -32,7 +32,7 @@ export default function IndexPage() {
             The BillDecoder <span style={{color:"#10b981"}}>Index</span>
           </h1>
           <p style={{fontSize:16,color:"#64748b",maxWidth:480,margin:"0 auto",lineHeight:1.7}}>
-            Real electricity bill data from Australians who opted in. Anonymised. Independent.
+            Real electricity bill data from Australians who opted in. De-identified. Independent.
           </p>
         </div>
 
