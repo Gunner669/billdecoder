@@ -383,32 +383,62 @@ export default function BillApp({ landingContent }) {
               var avgVal = pc.stateAvgCost || pc.stateAvgAnnualCost;
               var bestVal = pc.bestDealCost || pc.bestDealAnnualCost;
               var period = pc.periodLabel || "Annual";
-              var maxCost = Math.max(userVal, avgVal, bestVal);
-              var barColor = analysis.verdict === "overcharged" ? "#ef4444" : analysis.verdict === "fair" ? "#f59e0b" : "#10b981";
-              var bars = [
-                {label:"Your bill",value:userVal,color:barColor},
-                {label:"State avg (DMO)",value:avgVal,color:"#94a3b8"},
-                {label:"Best available",value:bestVal,color:"#10b981"}
-              ];
+              var periodLower = period.toLowerCase();
+              var saving = userVal - bestVal;
+              var annualSaving = periodLower === "quarterly" ? saving * 4 : periodLower === "monthly" ? saving * 12 : saving;
+              var scaleMax = Math.round(Math.max(userVal, avgVal, bestVal) * 1.08);
+              var bestPct = Math.round((bestVal / scaleMax) * 100);
+              var avgPct = Math.round((avgVal / scaleMax) * 100);
+              var userPct = Math.round((userVal / scaleMax) * 100);
+              var tariffDesc = analysis.tariffType ? analysis.tariffType + " plans" : "plans";
               return (
                 <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
                   <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#0f172a"}}>How your bill compares{pc.postcode ? " \u2014 "+pc.postcode+", "+analysis.state : ""}</p>
-                  <p style={{fontSize:11,color:"#94a3b8",fontStyle:"italic",marginBottom:14}}>{period} figures. DMO = Default Market Offer, the government-set price cap for your area.</p>
-                  <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                    {bars.map(function(bar,i) {
-                      var pct = Math.round((bar.value / maxCost) * 100);
-                      return (
-                        <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
-                          <span style={{width:110,fontSize:12,fontWeight:600,color:"#64748b",flexShrink:0,textAlign:"right"}}>{bar.label}</span>
-                          <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28,overflow:"hidden"}}>
-                            <div style={{width:pct+"%",height:28,background:bar.color,borderRadius:6,transition:"width 0.6s ease"}}></div>
-                          </div>
-                          <span style={{width:80,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(bar.value)}</span>
-                        </div>
-                      );
-                    })}
+                  <p style={{fontSize:12,color:"#64748b",marginBottom:16}}>All figures are per {periodLower === "quarterly" ? "quarter" : periodLower === "monthly" ? "month" : "year"}.</p>
+
+                  {saving > 0 && (
+                    <div style={{background:analysis.verdict==="overcharged"?"#fff5f5":"#fffbeb",border:analysis.verdict==="overcharged"?"2px solid #fca5a5":"2px solid #fcd34d",borderRadius:14,padding:"16px 20px",marginBottom:18,textAlign:"center"}}>
+                      <p style={{fontSize:24,fontWeight:900,color:analysis.verdict==="overcharged"?"#dc2626":"#b45309",letterSpacing:"-0.5px",marginBottom:4}}>You could save ~{fmtCost(saving)} per {periodLower === "quarterly" ? "quarter" : periodLower === "monthly" ? "month" : "year"}</p>
+                      {periodLower !== "annual" && <p style={{fontSize:14,fontWeight:700,color:analysis.verdict==="overcharged"?"#ef4444":"#d97706"}}>That is ~{fmtCost(annualSaving)} per year</p>}
+                    </div>
+                  )}
+
+                  <div style={{position:"relative",marginBottom:12}}>
+                    <div style={{background:"#f1f5f9",borderRadius:8,height:40,position:"relative",overflow:"visible"}}>
+                      <div style={{position:"absolute",left:0,width:bestPct+"%",height:40,background:"#dcfce7",borderRadius:"8px 0 0 8px"}}></div>
+                      <div style={{position:"absolute",left:bestPct+"%",width:Math.max(avgPct-bestPct,0)+"%",height:40,background:"#fef3c7"}}></div>
+                      <div style={{position:"absolute",left:avgPct+"%",width:Math.max(100-avgPct,0)+"%",height:40,background:"#fee2e2",borderRadius:"0 8px 8px 0"}}></div>
+
+                      <div style={{position:"absolute",left:bestPct+"%",top:-2,width:3,height:44,background:"#10b981",borderRadius:2,zIndex:3}}></div>
+                      <div style={{position:"absolute",left:avgPct+"%",top:-2,width:3,height:44,background:"#f59e0b",borderRadius:2,zIndex:3}}></div>
+                      <div style={{position:"absolute",left:userPct+"%",top:-6,width:4,height:52,background:analysis.verdict==="overcharged"?"#dc2626":analysis.verdict==="fair"?"#b45309":"#15803d",borderRadius:2,zIndex:4}}></div>
+                      <div style={{position:"absolute",left:userPct+"%",top:-22,transform:"translateX(-50%)",background:analysis.verdict==="overcharged"?"#dc2626":analysis.verdict==="fair"?"#b45309":"#15803d",color:"#fff",padding:"2px 8px",borderRadius:6,fontSize:11,fontWeight:700,whiteSpace:"nowrap",zIndex:5}}>You are here</div>
+                    </div>
                   </div>
-                  {pc.referenceNote && <p style={{fontSize:11,color:"#94a3b8",marginTop:12,lineHeight:1.5}}>{pc.referenceNote}</p>}
+
+                  <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:12}}>
+                    <div>
+                      <span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#10b981",marginRight:5,verticalAlign:"middle"}}></span>
+                      <span style={{fontSize:12,color:"#0f172a",fontWeight:700}}>Best available</span>
+                      <span style={{fontSize:12,color:"#64748b",marginLeft:4}}>{fmtCost(bestVal)}</span>
+                    </div>
+                    <div>
+                      <span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#f59e0b",marginRight:5,verticalAlign:"middle"}}></span>
+                      <span style={{fontSize:12,color:"#0f172a",fontWeight:700}}>State avg</span>
+                      <span style={{fontSize:12,color:"#64748b",marginLeft:4}}>{fmtCost(avgVal)}</span>
+                    </div>
+                    <div>
+                      <span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:analysis.verdict==="overcharged"?"#dc2626":analysis.verdict==="fair"?"#b45309":"#15803d",marginRight:5,verticalAlign:"middle"}}></span>
+                      <span style={{fontSize:12,color:"#0f172a",fontWeight:700}}>Your bill</span>
+                      <span style={{fontSize:12,color:"#64748b",marginLeft:4}}>{fmtCost(userVal)}</span>
+                    </div>
+                  </div>
+
+                  <div style={{fontSize:11,color:"#94a3b8",lineHeight:1.6}}>
+                    <p style={{marginBottom:4}}><strong style={{color:"#64748b"}}>State avg</strong> — the maximum price your retailer is allowed to charge under the government Default Market Offer.</p>
+                    <p style={{marginBottom:4}}><strong style={{color:"#64748b"}}>Best available</strong> — cheapest current market offer for {tariffDesc} in your area.</p>
+                    {pc.referenceNote && <p>{pc.referenceNote}</p>}
+                  </div>
                 </div>
               );
             })()}
@@ -422,7 +452,13 @@ export default function BillApp({ landingContent }) {
               <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:16,padding:24,marginBottom:16}}>
                 <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#92400e"}}>Solar feed-in: {analysis.solarFitRate}</p>
                 <p style={{fontSize:11,color:"#b45309",fontStyle:"italic",marginBottom:8}}>Feed-in tariff — what your retailer pays you per kWh for solar you export to the grid.</p>
-                <p style={{fontSize:15,color:"#78350f",lineHeight:1.75}}>{analysis.solarInsight}</p>
+                <p style={{fontSize:15,color:"#78350f",lineHeight:1.75,marginBottom:analysis.solarDetail?12:0}}>{analysis.solarInsight}</p>
+                {analysis.solarDetail&&(
+                  <div style={{background:"#fef3c7",borderRadius:10,padding:"14px 16px",borderLeft:"3px solid #f59e0b"}}>
+                    <p style={{fontSize:11,fontWeight:700,color:"#92400e",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>Rate caps and alternatives</p>
+                    <p style={{fontSize:14,color:"#78350f",lineHeight:1.7}}>{analysis.solarDetail}</p>
+                  </div>
+                )}
               </div>
             )}
 
