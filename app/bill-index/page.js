@@ -40,7 +40,7 @@ export default function IndexPage() {
       </main>
 
       <footer style={{borderTop:"1px solid #e2e8f0",padding:"16px 24px",textAlign:"center"}}>
-        <p style={{fontSize:11,color:"#cbd5e1"}}>2026 BillDecoder.au — Independent. No retailer commissions.</p>
+        <p style={{fontSize:11,color:"#cbd5e1"}}>2026 BillDecoder.au — Independent. No retailer commissions. ABN: [pending registration]</p>
       </footer>
     </div>
   );

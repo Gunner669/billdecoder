@@ -122,7 +122,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="Contact">
-            <P>For privacy enquiries or data deletion requests, visit <a href="https://billdecoder.au" style={{color:"#3b82f6",fontWeight:600}}>billdecoder.au</a>.</P>
+            <P>For privacy enquiries or data deletion requests, email <strong>privacy@billdecoder.au</strong> or visit our <a href="/contact" style={{color:"#3b82f6",fontWeight:600}}>contact page</a>.</P>
           </Section>
         </div>
       </main>
@@ -134,7 +134,7 @@ export default function PrivacyPage() {
             <a href="/bill-index" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>BillDecoder Index</a>
             <a href="/privacy" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Privacy Policy</a>
           </div>
-          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions.</p>
+          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions. ABN: [pending registration]</p>
         </div>
       </footer>
     </div>

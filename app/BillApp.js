@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const RETAILERS = {
   amber:{name:"Amber Electric",url:"https://www.amber.com.au",badge:"Best for solar & battery",bc:"#f59e0b",pitch:"Pay real wholesale electricity prices. Ideal for solar, battery or EV owners."},
@@ -69,6 +69,27 @@ function tipFor(text) {
   return null;
 }
 
+var EXAMPLE_RESULT = {
+  retailer:"EnergyAustralia",location:"Sydney, NSW",state:"NSW",billingPeriodDays:91,
+  tariffType:"Time of Use",dailySupplyCharge:"$1.38/day",usageRateSummary:"peak 42.9c / off-peak 16.5c / shoulder 28.1c",
+  peakOffPeakTimes:"Peak: 2pm-8pm weekdays. Shoulder: 7am-2pm & 8pm-10pm weekdays. Off-peak: 10pm-7am & weekends.",
+  totalBillAmount:"$782.30",estimatedAnnualCost:"~$3,130/year",
+  verdict:"overcharged",verdictMessage:"You are paying about $650 more per year than you need to on this Time of Use plan.",
+  estimatedAnnualOvercharge:"~$650/year",
+  usageLabel:"Evening Peaker",usageInsight:"Most of your usage is happening during peak hours between 2pm and 8pm on weekdays. That is the most expensive time to use power on a TOU plan. You are using about 18kWh per day which is above average for a 2-person household in NSW.",
+  supplyChargeNote:"Your supply charge of $1.38/day is slightly above the NSW average of $1.20/day.",
+  solarFitRate:"",solarInsight:"",solarDetail:"",
+  savingsActions:[
+    {title:"Shift usage after 10pm",detail:"Your peak rate of 42.9c/kWh is high. Running your dishwasher, washing machine and dryer after 10pm instead of during peak hours could save significantly.",annualSaving:"~$280/year"},
+    {title:"Switch to a cheaper TOU plan",detail:"Several retailers offer TOU plans with peak rates under 35c/kWh in the Ausgrid network area. Your current 42.9c peak rate is well above the best available.",annualSaving:"~$240/year"},
+    {title:"Reduce standby power drain",detail:"At 18kWh/day for a 2-person home, your base load is high. Switching off appliances at the wall when not in use could cut 2-3kWh/day.",annualSaving:"~$130/year"}
+  ],
+  recommendedRetailers:["energy_locals","tango","ovo"],
+  retailerRationale:"Energy Locals and Tango both offer lower TOU rates in the Ausgrid area. OVO rewards off-peak usage which suits your evening pattern if you can shift some load.",
+  summary:"You are being overcharged by about $650 per year. Your peak rate is high and most of your usage falls in the most expensive time window. Switching retailer and shifting some usage to off-peak could save you over $600 annually.",
+  postcodeComparison:{userCost:782,stateAvgCost:680,bestDealCost:533,postcode:"2000",periodLabel:"Quarterly",referenceNote:"Based on AER DMO 2025-26 for Ausgrid network area, TOU residential."}
+};
+
 export default function BillApp({ landingContent }) {
   const [phase, setPhase] = useState("upload");
   const [analysis, setAnalysis] = useState(null);
@@ -83,6 +104,12 @@ export default function BillApp({ landingContent }) {
   const [showConsent, setShowConsent] = useState(true);
   const [contributed, setContributed] = useState(false);
   const [timers, setTimers] = useState([]);
+  const [billCount, setBillCount] = useState(null);
+  const [showExample, setShowExample] = useState(false);
+
+  useEffect(function() {
+    fetch("/api/bill-count").then(function(r) { return r.json(); }).then(function(d) { setBillCount(d.count || 0); }).catch(function() {});
+  }, []);
 
   function startTimers() {
     var ts = [];
@@ -109,7 +136,7 @@ export default function BillApp({ landingContent }) {
     clearTimers(timers);
     setPhase("upload"); setAnalysis(null); setError(null); setHint(null);
     setActiveSteps([]); setDoneSteps([]); setShowInsight(false); setInsightVis(false);
-    setEmail(""); setEmailDone(false); setShowConsent(true); setContributed(false); setTimers([]);
+    setEmail(""); setEmailDone(false); setShowConsent(true); setContributed(false); setTimers([]); setShowExample(false);
   }
 
   function handleFile(file) {
@@ -252,13 +279,24 @@ export default function BillApp({ landingContent }) {
                 <button onClick={function(){setError(null);}} style={{background:"none",border:"none",color:"#fca5a5",cursor:"pointer",fontSize:20,padding:0}}>x</button>
               </div>
             )}
-            <div style={{textAlign:"center",marginBottom:32}}>
+            {billCount !== null && billCount > 0 && (
+              <div style={{textAlign:"center",marginBottom:16}}>
+                <span style={{display:"inline-block",background:"#f0fdf4",color:"#15803d",padding:"5px 14px",borderRadius:20,fontSize:13,fontWeight:700}}>{billCount.toLocaleString()} bill{billCount !== 1 ? "s" : ""} analysed</span>
+              </div>
+            )}
+            <div style={{textAlign:"center",marginBottom:24}}>
               <h1 style={{fontSize:"clamp(28px,5vw,38px)",fontWeight:900,letterSpacing:"-1.5px",lineHeight:1.15,marginBottom:12,color:"#0f172a"}}>
                 Your electricity bill, <span style={{color:"#10b981"}}>decoded in 60 seconds.</span>
               </h1>
               <p style={{fontSize:16,color:"#64748b",maxWidth:440,margin:"0 auto",lineHeight:1.7}}>
                 Other sites make you fill in forms and understand your bill first. Just upload a photo — we do the rest.
               </p>
+            </div>
+            <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"#fff",border:"1.5px solid #10b981",borderRadius:10,padding:"8px 16px"}}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#10b981"/><path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>100% Independent — No retailer commissions</span>
+              </div>
             </div>
             <label style={{border:"2px dashed #cbd5e1",borderRadius:20,padding:"48px 24px",textAlign:"center",cursor:"pointer",background:"#fff",display:"block",marginBottom:16}}>
               <input type="file" accept=".pdf,image/*" style={{display:"none"}} onChange={function(e){if(e.target.files[0])handleFile(e.target.files[0]);}} />
@@ -271,6 +309,9 @@ export default function BillApp({ landingContent }) {
               <p style={{color:"#64748b",fontSize:14,marginBottom:20}}>PDF, photo or screenshot — any Aussie retailer, any state</p>
               <span style={{background:"#0f172a",color:"#fff",borderRadius:12,padding:"13px 32px",fontWeight:700,fontSize:15,display:"inline-block"}}>Choose a file</span>
             </label>
+            <div style={{textAlign:"center",marginBottom:16}}>
+              <button onClick={function(){setShowExample(true);setAnalysis(EXAMPLE_RESULT);setPhase("results");setContributed(true);}} style={{background:"none",border:"none",color:"#3b82f6",fontSize:14,fontWeight:600,cursor:"pointer",textDecoration:"underline",fontFamily:"inherit"}}>See an example result</button>
+            </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12,marginBottom:20}}>
               {[
                 {icon:"\u{1F4F7}",h:"No forms to fill in",t:"Just upload a photo. AI reads your bill so you don't have to."},
@@ -286,11 +327,12 @@ export default function BillApp({ landingContent }) {
                 );
               })}
             </div>
-            <div style={{display:"flex",justifyContent:"center",gap:20,flexWrap:"wrap",marginBottom:28}}>
+            <div style={{display:"flex",justifyContent:"center",gap:20,flexWrap:"wrap",marginBottom:12}}>
               {["Bill never stored","No account needed","Built for Australians"].map(function(t,i){
                 return <span key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#64748b"}}><span style={{color:"#10b981"}}>{"\u2713"}</span> {t}</span>;
               })}
             </div>
+            <p style={{textAlign:"center",fontSize:11,color:"#94a3b8",marginBottom:28}}>Powered by Claude AI from Anthropic</p>
           </div>
         )}
 
@@ -349,8 +391,24 @@ export default function BillApp({ landingContent }) {
           return (
           <div style={{maxWidth:700,margin:"0 auto"}}>
 
+            {/* Example banner */}
+            {showExample && (
+              <div style={{background:"#fffbeb",border:"2px solid #fcd34d",borderRadius:14,padding:"14px 20px",marginBottom:16,textAlign:"center"}}>
+                <p style={{fontWeight:700,fontSize:15,color:"#92400e",marginBottom:6}}>This is an example result</p>
+                <p style={{fontSize:13,color:"#b45309",marginBottom:10}}>Upload your own bill to get a personalised analysis.</p>
+                <button onClick={reset} style={{background:"#0f172a",color:"#fff",border:"none",borderRadius:10,padding:"11px 24px",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"inherit"}}>Analyse your own bill</button>
+              </div>
+            )}
+
+            {/* Sticky jump-to nav */}
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",justifyContent:"center",marginBottom:16,position:"sticky",top:58,zIndex:40,background:"#f8fafc",padding:"8px 0"}}>
+              {[{l:"Verdict",h:"verdict"},{l:"Compare",h:"compare"},{l:"Breakdown",h:"breakdown"},{l:"Actions",h:"actions"},{l:"Retailers",h:"retailers"}].map(function(n) {
+                return <a key={n.h} href={"#"+n.h} style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:8,padding:"5px 12px",fontSize:11,fontWeight:600,color:"#64748b",textDecoration:"none"}}>{n.l}</a>;
+              })}
+            </div>
+
             {/* 1. Verdict card */}
-            <div style={{background:cfg.bg,border:"2px solid "+cfg.border,borderRadius:20,padding:"28px 28px 24px",marginBottom:16}}>
+            <div id="verdict" style={{background:cfg.bg,border:"2px solid "+cfg.border,borderRadius:20,padding:"28px 28px 24px",marginBottom:16}}>
               <div style={{fontSize:40,marginBottom:10}}>{cfg.emoji}</div>
               <p style={{fontSize:"clamp(20px,4vw,26px)",fontWeight:900,color:cfg.lc,letterSpacing:"-1px",marginBottom:10}}>{cfg.label}</p>
               <p style={{fontSize:16,color:cfg.tc,lineHeight:1.7,marginBottom:16}}>{analysis.verdictMessage}</p>
@@ -364,26 +422,30 @@ export default function BillApp({ landingContent }) {
             </div>
 
             {/* 2. Gated comparison chart — Touchpoint 1 */}
+            <div id="compare"></div>
             {hasChart && (
               !contributed ? (
-                <div style={{position:"relative",marginBottom:16}}>
-                  {/* Blurred chart preview */}
-                  <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,filter:"blur(6px)",pointerEvents:"none",userSelect:"none"}}>
+                <div style={{position:"relative",marginBottom:16,borderRadius:16,overflow:"hidden"}}>
+                  {/* Blurred chart preview — deliberately gated */}
+                  <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,filter:"blur(8px) saturate(0.5)",pointerEvents:"none",userSelect:"none",opacity:0.6}}>
                     <p style={{fontWeight:700,fontSize:15,color:"#0f172a"}}>How your bill compares</p>
-                    <div style={{marginTop:12}}>
+                    <div style={{marginTop:16}}>
                       {[{w:userPct,c:"#ef4444"},{w:avgPct,c:"#f59e0b"},{w:bestPct,c:"#10b981"}].map(function(b,i) {
                         return (
-                          <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                            <span style={{width:100,height:12,background:"#e2e8f0",borderRadius:4}}></span>
-                            <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28}}><div style={{width:b.w+"%",height:28,background:b.c,borderRadius:6}}></div></div>
-                            <span style={{width:60,height:12,background:"#e2e8f0",borderRadius:4}}></span>
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                            <span style={{width:100,height:14,background:"#e2e8f0",borderRadius:4}}></span>
+                            <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:32}}><div style={{width:b.w+"%",height:32,background:b.c,borderRadius:6}}></div></div>
+                            <span style={{width:70,height:14,background:"#e2e8f0",borderRadius:4}}></span>
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                  {/* Overlay */}
-                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.7)",borderRadius:16,backdropFilter:"blur(2px)",padding:"0 24px"}}>
+                  {/* Overlay with lock icon */}
+                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.85)",borderRadius:16,padding:"0 24px"}}>
+                    <div style={{background:"#f0fdf4",borderRadius:"50%",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#10b981" strokeWidth="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/></svg>
+                    </div>
                     <p style={{fontWeight:800,fontSize:17,color:"#0f172a",marginBottom:8,textAlign:"center",maxWidth:380}}>Share your bill data to see how you compare to others in {pc.postcode || "your area"}</p>
                     <p style={{fontSize:13,color:"#475569",marginBottom:4,textAlign:"center"}}>This helps build Australia's first independent electricity pricing index.</p>
                     <p style={{fontSize:13,color:"#64748b",marginBottom:16,textAlign:"center"}}>Your name and account details are never included — only pricing data is shared.</p>
@@ -436,7 +498,7 @@ export default function BillApp({ landingContent }) {
             )}
 
             {/* 3. Your bill decoded */}
-            <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
+            <div id="breakdown" style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:12,color:"#0f172a"}}>Your bill, decoded</p>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10}}>
                 {[{l:"Tariff type",v:analysis.tariffType,n:analysis.peakOffPeakTimes,t:true},{l:"Usage rate",v:analysis.usageRateSummary,t:true},{l:"Daily supply charge",v:analysis.dailySupplyCharge,n:analysis.supplyChargeNote,t:true},{l:"Retailer",v:analysis.retailer}].map(function(f,i){
@@ -475,7 +537,7 @@ export default function BillApp({ landingContent }) {
             )}
 
             {/* 6. What to do right now */}
-            <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
+            <div id="actions" style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:14,color:"#0f172a"}}>What to do right now</p>
               {(analysis.savingsActions||[]).map(function(action,i,arr){
                 return (
@@ -491,7 +553,7 @@ export default function BillApp({ landingContent }) {
             </div>
 
             {/* 7. Retailers worth considering */}
-            <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
+            <div id="retailers" style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:8,color:"#0f172a"}}>Retailers worth considering</p>
               {analysis.retailerRationale&&<p style={{fontSize:14,color:"#64748b",marginBottom:14,paddingBottom:12,borderBottom:"1px solid #f1f5f9",lineHeight:1.7}}>{analysis.retailerRationale}</p>}
               {retailers.map(function(r,i){
@@ -520,10 +582,10 @@ export default function BillApp({ landingContent }) {
                 <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help build Australia's first independent electricity pricing index</p>
                 <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>Energy companies know what everyone pays. You don't. Share your bill data to help change that. Your name, address and account details are stripped out — only pricing data is kept.</p>
                 <div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
-                  <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 24px",fontWeight:700,fontSize:15,cursor:"pointer"}}>
+                  <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:12,padding:"14px 28px",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 2px 8px rgba(16,185,129,0.3)"}}>
                     Count me in
                   </button>
-                  <span style={{fontSize:13,color:"#64748b"}}>47 Australians have shared so far</span>
+                  <span style={{fontSize:13,color:"#94a3b8"}}>{billCount !== null && billCount > 0 ? billCount + " Australians have shared so far" : "Be one of the first to share"}</span>
                 </div>
               </div>
             )}
@@ -555,8 +617,8 @@ export default function BillApp({ landingContent }) {
 
             {/* 11. Analyse another bill */}
             <div style={{textAlign:"center",paddingBottom:16}}>
-              <button onClick={reset} style={{background:"none",border:"1px solid #e2e8f0",borderRadius:10,padding:"11px 24px",color:"#64748b",cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}}>
-                Analyse another bill
+              <button onClick={reset} style={{background:showExample?"#0f172a":"none",color:showExample?"#fff":"#64748b",border:showExample?"none":"1px solid #e2e8f0",borderRadius:10,padding:"13px 28px",cursor:"pointer",fontSize:showExample?15:14,fontWeight:showExample?700:600,fontFamily:"inherit"}}>
+                {showExample ? "Analyse your own bill" : "Analyse another bill"}
               </button>
             </div>
           </div>

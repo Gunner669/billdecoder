@@ -28,7 +28,7 @@ export default function Error({ error, reset }) {
 
       <footer style={{borderTop:"1px solid #e2e8f0",padding:"32px 24px 24px",background:"#fff",position:"absolute",bottom:0,left:0,right:0}}>
         <div style={{maxWidth:480,margin:"0 auto",textAlign:"center"}}>
-          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions.</p>
+          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; ABN: [pending registration]</p>
         </div>
       </footer>
     </div>

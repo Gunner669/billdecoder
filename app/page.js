@@ -170,7 +170,7 @@ function Footer() {
         </div>
         <div style={{borderTop:"1px solid #f1f5f9",paddingTop:16,display:"flex",flexDirection:"column",gap:6}}>
           <p style={{fontSize:11,color:"#94a3b8",lineHeight:1.6}}>BillDecoder.au is independent and does not receive commissions from any energy retailer. Your bill data is never stored.</p>
-          <p style={{fontSize:11,color:"#cbd5e1"}}>© 2026 BillDecoder.au</p>
+          <p style={{fontSize:11,color:"#cbd5e1"}}>© 2026 BillDecoder.au — ABN: [pending registration]</p>
         </div>
       </div>
     </footer>
@@ -180,9 +180,6 @@ function Footer() {
 function LandingContent() {
   return (
     <div style={{fontFamily:"system-ui,sans-serif",background:"#f8fafc",color:"#0f172a"}}>
-      <HowItWorks />
-      <WhatYouGet />
-      <Benefits />
       <States />
       <Faq />
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(FAQ_JSONLD)}} />

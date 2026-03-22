@@ -28,7 +28,8 @@ export default function ContactPage() {
 
       <main style={{maxWidth:560,margin:"0 auto",padding:"40px 16px 64px"}}>
         <h1 style={{fontSize:"clamp(26px,5vw,34px)",fontWeight:900,letterSpacing:"-1.5px",lineHeight:1.15,marginBottom:8,color:"#0f172a"}}>Contact us</h1>
-        <p style={{fontSize:15,color:"#64748b",lineHeight:1.7,marginBottom:32}}>Questions, feedback, data deletion requests, or just want to say hello? We would love to hear from you.</p>
+        <p style={{fontSize:15,color:"#64748b",lineHeight:1.7,marginBottom:12}}>Questions, feedback, data deletion requests, or just want to say hello? We would love to hear from you.</p>
+        <p style={{fontSize:14,color:"#94a3b8",marginBottom:32}}>You can also email us at <strong style={{color:"#64748b"}}>hello@billdecoder.au</strong></p>
 
         <ContactForm />
 
@@ -59,7 +60,7 @@ export default function ContactPage() {
             <a href="/privacy" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Privacy Policy</a>
             <a href="/contact" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Contact</a>
           </div>
-          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions.</p>
+          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions. ABN: [pending registration]</p>
         </div>
       </footer>
     </div>

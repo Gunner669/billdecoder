@@ -70,8 +70,15 @@ export default function AboutPage() {
           </div>
 
           <div style={{marginBottom:28}}>
+            <h2 style={{fontSize:18,fontWeight:800,color:"#0f172a",marginBottom:10}}>Who built this</h2>
+            <div style={{background:"#f8fafc",borderRadius:12,padding:"20px 20px",border:"1px dashed #cbd5e1"}}>
+              <p style={{fontSize:14,color:"#64748b",lineHeight:1.8,fontStyle:"italic"}}>[Founder name and photo to be added]. BillDecoder.au was built because Australian electricity bills are unnecessarily confusing, and the tools that exist to compare them are either too complicated or compromised by retailer commissions.</p>
+            </div>
+          </div>
+
+          <div style={{marginBottom:28}}>
             <h2 style={{fontSize:18,fontWeight:800,color:"#0f172a",marginBottom:10}}>Get in touch</h2>
-            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>Have questions, feedback, or a partnership enquiry? Visit our <a href="/contact" style={{color:"#3b82f6",fontWeight:600}}>contact page</a>.</p>
+            <p style={{fontSize:15,color:"#475569",lineHeight:1.8,marginBottom:10}}>Have questions, feedback, or a partnership enquiry? Visit our <a href="/contact" style={{color:"#3b82f6",fontWeight:600}}>contact page</a> or email <strong>hello@billdecoder.au</strong>.</p>
           </div>
         </div>
       </main>
@@ -85,7 +92,7 @@ export default function AboutPage() {
             <a href="/contact" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>Contact</a>
             <a href="/about" style={{color:"#64748b",fontSize:13,textDecoration:"none",fontWeight:600}}>About</a>
           </div>
-          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions.</p>
+          <p style={{fontSize:11,color:"#cbd5e1"}}>&copy; 2026 BillDecoder.au &mdash; Independent. No retailer commissions. ABN: [pending registration]</p>
         </div>
       </footer>
     </div>
