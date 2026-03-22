@@ -368,9 +368,10 @@ export default function BillApp({ landingContent }) {
                     </div>
                   </div>
                   {/* Overlay */}
-                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.7)",borderRadius:16,backdropFilter:"blur(2px)"}}>
-                    <p style={{fontWeight:800,fontSize:17,color:"#0f172a",marginBottom:6,textAlign:"center",maxWidth:340}}>Share your bill data to see how you compare to others in {pc.postcode || "your area"}</p>
-                    <p style={{fontSize:13,color:"#64748b",marginBottom:14}}>Your name and account details are never included.</p>
+                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.7)",borderRadius:16,backdropFilter:"blur(2px)",padding:"0 24px"}}>
+                    <p style={{fontWeight:800,fontSize:17,color:"#0f172a",marginBottom:8,textAlign:"center",maxWidth:380}}>Share your bill data to see how you compare to others in {pc.postcode || "your area"}</p>
+                    <p style={{fontSize:13,color:"#475569",marginBottom:4,textAlign:"center"}}>This helps build Australia's first independent electricity pricing index.</p>
+                    <p style={{fontSize:13,color:"#64748b",marginBottom:16,textAlign:"center"}}>Your name and account details are never included — only pricing data is shared.</p>
                     <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 28px",fontWeight:700,fontSize:15,cursor:"pointer"}}>Yes, show me</button>
                   </div>
                 </div>
@@ -502,7 +503,7 @@ export default function BillApp({ landingContent }) {
               <div style={{background:"linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%)",borderRadius:20,padding:"28px 28px 24px",marginBottom:16,position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,right:0,width:120,height:120,background:"#10b981",borderRadius:"0 0 0 120px",opacity:0.1}}></div>
                 <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help build Australia's first independent electricity pricing index</p>
-                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>Energy companies know what everyone pays. You don't. Share your bill data to help change that. Your name and account details are never included — only pricing data.</p>
+                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>Energy companies know what everyone pays. You don't. Share your bill data to help change that. Your name, address and account details are stripped out — only pricing data is kept.</p>
                 <div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
                   <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 24px",fontWeight:700,fontSize:15,cursor:"pointer"}}>
                     Count me in
