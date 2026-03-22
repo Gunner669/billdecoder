@@ -313,8 +313,28 @@ export default function BillApp({ landingContent }) {
           </div>
         )}
 
-        {phase === "results" && analysis && (
+        {phase === "results" && analysis && (function() {
+          var pc = analysis.postcodeComparison || {};
+          var userVal = pc.userCost || pc.userAnnualCost || 0;
+          var avgVal = pc.stateAvgCost || pc.stateAvgAnnualCost || 0;
+          var bestVal = pc.bestDealCost || pc.bestDealAnnualCost || 0;
+          var hasChart = userVal > 0;
+          var period = pc.periodLabel || "Annual";
+          var periodLower = period.toLowerCase();
+          var perLabel = periodLower === "quarterly" ? "per quarter" : periodLower === "monthly" ? "per month" : "per year";
+          var saving = userVal - bestVal;
+          var annualSaving = periodLower === "quarterly" ? saving * 4 : periodLower === "monthly" ? saving * 12 : saving;
+          var scaleMax = hasChart ? Math.round(Math.max(userVal, avgVal, bestVal) * 1.08) : 1;
+          var bestPct = Math.round((bestVal / scaleMax) * 100);
+          var avgPct = Math.round((avgVal / scaleMax) * 100);
+          var userPct = Math.round((userVal / scaleMax) * 100);
+          var tariffDesc = analysis.tariffType ? analysis.tariffType + " plans" : "plans";
+          var userColor = analysis.verdict === "overcharged" ? "#dc2626" : analysis.verdict === "fair" ? "#b45309" : "#15803d";
+
+          return (
           <div style={{maxWidth:700,margin:"0 auto"}}>
+
+            {/* 1. Verdict card */}
             <div style={{background:cfg.bg,border:"2px solid "+cfg.border,borderRadius:20,padding:"28px 28px 24px",marginBottom:16}}>
               <div style={{fontSize:40,marginBottom:10}}>{cfg.emoji}</div>
               <p style={{fontSize:"clamp(20px,4vw,26px)",fontWeight:900,color:cfg.lc,letterSpacing:"-1px",marginBottom:10}}>{cfg.label}</p>
@@ -328,38 +348,78 @@ export default function BillApp({ landingContent }) {
               </div>
             </div>
 
-            {showConsent && !contributed && (
-              <div style={{background:"linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%)",borderRadius:20,padding:"28px 28px 24px",marginBottom:16,position:"relative",overflow:"hidden"}}>
-                <div style={{position:"absolute",top:0,right:0,width:120,height:120,background:"#10b981",borderRadius:"0 0 0 120px",opacity:0.1}}></div>
-                <p style={{fontSize:13,fontWeight:700,color:"#10b981",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Your data can make a difference</p>
-                <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help shine a light on what Australians really pay for electricity</p>
-                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:6}}>Energy companies have detailed data on what every customer pays. Consumers have almost none. That imbalance is how overcharging stays hidden and goes unchallenged.</p>
-                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>By sharing your bill data, you help us build the <strong style={{color:"#fff"}}>BillDecoder Index</strong> — a powerful dataset of real electricity pricing across Australia. This data is used to hold energy retailers accountable, drive fairer pricing, and inform the organisations working to protect consumers. The more people share, the clearer the picture becomes.</p>
-                <div style={{background:"rgba(255,255,255,0.08)",borderRadius:12,padding:"12px 16px",marginBottom:16}}>
-                  <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
-                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Your name and account details are never included</span>
-                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Only pricing data is shared</span>
-                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Takes one click</span>
+            {/* 2. Gated comparison chart — Touchpoint 1 */}
+            {hasChart && (
+              !contributed ? (
+                <div style={{position:"relative",marginBottom:16}}>
+                  {/* Blurred chart preview */}
+                  <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,filter:"blur(6px)",pointerEvents:"none",userSelect:"none"}}>
+                    <p style={{fontWeight:700,fontSize:15,color:"#0f172a"}}>How your bill compares</p>
+                    <div style={{marginTop:12}}>
+                      {[{w:userPct,c:"#ef4444"},{w:avgPct,c:"#f59e0b"},{w:bestPct,c:"#10b981"}].map(function(b,i) {
+                        return (
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                            <span style={{width:100,height:12,background:"#e2e8f0",borderRadius:4}}></span>
+                            <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28}}><div style={{width:b.w+"%",height:28,background:b.c,borderRadius:6}}></div></div>
+                            <span style={{width:60,height:12,background:"#e2e8f0",borderRadius:4}}></span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {/* Overlay */}
+                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.7)",borderRadius:16,backdropFilter:"blur(2px)"}}>
+                    <p style={{fontWeight:800,fontSize:17,color:"#0f172a",marginBottom:6,textAlign:"center",maxWidth:340}}>Share your bill data to see how you compare to others in {pc.postcode || "your area"}</p>
+                    <p style={{fontSize:13,color:"#64748b",marginBottom:14}}>Your name and account details are never included.</p>
+                    <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 28px",fontWeight:700,fontSize:15,cursor:"pointer"}}>Yes, show me</button>
                   </div>
                 </div>
-                <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                  <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 24px",fontWeight:700,fontSize:15,cursor:"pointer"}}>
-                    Yes, share my bill data
-                  </button>
-                  <button onClick={function(){setShowConsent(false);}} style={{background:"transparent",color:"#64748b",border:"1px solid #334155",borderRadius:10,padding:"13px 24px",fontWeight:600,fontSize:14,cursor:"pointer"}}>
-                    No thanks
-                  </button>
+              ) : (
+                <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
+                  <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#0f172a"}}>How your bill compares{pc.postcode ? " \u2014 "+pc.postcode+", "+analysis.state : ""}</p>
+                  <p style={{fontSize:12,color:"#64748b",marginBottom:16}}>All figures are {perLabel}.</p>
+
+                  {saving > 0 && (
+                    <div style={{background:analysis.verdict==="overcharged"?"#fff5f5":"#fffbeb",border:analysis.verdict==="overcharged"?"2px solid #fca5a5":"2px solid #fcd34d",borderRadius:14,padding:"16px 20px",marginBottom:18,textAlign:"center"}}>
+                      <p style={{fontSize:24,fontWeight:900,color:analysis.verdict==="overcharged"?"#dc2626":"#b45309",letterSpacing:"-0.5px",marginBottom:4}}>You could save ~{fmtCost(saving)} {perLabel}</p>
+                      {periodLower !== "annual" && <p style={{fontSize:14,fontWeight:700,color:analysis.verdict==="overcharged"?"#ef4444":"#d97706"}}>That is ~{fmtCost(annualSaving)} per year</p>}
+                    </div>
+                  )}
+
+                  <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:14}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <span style={{width:130,fontSize:12,fontWeight:600,color:"#64748b",flexShrink:0,textAlign:"right"}}>Your bill</span>
+                      <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28,overflow:"hidden"}}><div style={{width:userPct+"%",height:28,background:userColor,borderRadius:6,transition:"width 0.6s ease"}}></div></div>
+                      <span style={{width:90,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(userVal)} {perLabel}</span>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <span style={{width:130,fontSize:12,fontWeight:600,color:"#64748b",flexShrink:0,textAlign:"right"}}>State avg (DMO)</span>
+                      <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28,overflow:"hidden"}}><div style={{width:avgPct+"%",height:28,background:"#f59e0b",borderRadius:6,transition:"width 0.6s ease"}}></div></div>
+                      <span style={{width:90,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(avgVal)} {perLabel}</span>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <span style={{width:130,fontSize:12,fontWeight:600,color:"#64748b",flexShrink:0,textAlign:"right"}}>Best available</span>
+                      <div style={{flex:1,background:"#f1f5f9",borderRadius:6,height:28,overflow:"hidden"}}><div style={{width:bestPct+"%",height:28,background:"#10b981",borderRadius:6,transition:"width 0.6s ease"}}></div></div>
+                      <span style={{width:90,fontSize:13,fontWeight:700,color:"#0f172a",flexShrink:0}}>{fmtCost(bestVal)} {perLabel}</span>
+                    </div>
+                  </div>
+
+                  <div style={{fontSize:11,color:"#94a3b8",lineHeight:1.6}}>
+                    <p style={{marginBottom:4}}><strong style={{color:"#64748b"}}>State avg (DMO)</strong> — the maximum price your retailer is allowed to charge under the government Default Market Offer.</p>
+                    <p style={{marginBottom:4}}><strong style={{color:"#64748b"}}>Best available</strong> — cheapest current market offer for {tariffDesc} in your area.</p>
+                    {pc.referenceNote && <p>{pc.referenceNote}</p>}
+                  </div>
                 </div>
-              </div>
+              )
             )}
 
             {contributed && (
-              <div style={{background:"#f0fdf4",border:"2px solid #86efac",borderRadius:16,padding:"20px 24px",marginBottom:16,textAlign:"center"}}>
-                <p style={{fontWeight:800,fontSize:17,color:"#15803d",marginBottom:4}}>Thank you — you are making a difference</p>
-                <p style={{fontSize:13,color:"#166534"}}>Your bill data has been added to the <a href="/bill-index" style={{color:"#15803d",fontWeight:700}}>BillDecoder Index</a>.</p>
+              <div style={{background:"#f0fdf4",border:"2px solid #86efac",borderRadius:16,padding:"14px 20px",marginBottom:16,textAlign:"center"}}>
+                <p style={{fontWeight:700,fontSize:14,color:"#15803d"}}>Thank you — your bill data has been added to the <a href="/bill-index" style={{color:"#15803d",fontWeight:700}}>BillDecoder Index</a>.</p>
               </div>
             )}
 
+            {/* 3. Your bill decoded */}
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:12,color:"#0f172a"}}>Your bill, decoded</p>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10}}>
@@ -377,77 +437,13 @@ export default function BillApp({ landingContent }) {
               </div>
             </div>
 
-            {analysis.postcodeComparison && (analysis.postcodeComparison.userCost > 0 || analysis.postcodeComparison.userAnnualCost > 0) && (function() {
-              var pc = analysis.postcodeComparison;
-              var userVal = pc.userCost || pc.userAnnualCost;
-              var avgVal = pc.stateAvgCost || pc.stateAvgAnnualCost;
-              var bestVal = pc.bestDealCost || pc.bestDealAnnualCost;
-              var period = pc.periodLabel || "Annual";
-              var periodLower = period.toLowerCase();
-              var saving = userVal - bestVal;
-              var annualSaving = periodLower === "quarterly" ? saving * 4 : periodLower === "monthly" ? saving * 12 : saving;
-              var scaleMax = Math.round(Math.max(userVal, avgVal, bestVal) * 1.08);
-              var bestPct = Math.round((bestVal / scaleMax) * 100);
-              var avgPct = Math.round((avgVal / scaleMax) * 100);
-              var userPct = Math.round((userVal / scaleMax) * 100);
-              var tariffDesc = analysis.tariffType ? analysis.tariffType + " plans" : "plans";
-              return (
-                <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
-                  <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#0f172a"}}>How your bill compares{pc.postcode ? " \u2014 "+pc.postcode+", "+analysis.state : ""}</p>
-                  <p style={{fontSize:12,color:"#64748b",marginBottom:16}}>All figures are per {periodLower === "quarterly" ? "quarter" : periodLower === "monthly" ? "month" : "year"}.</p>
-
-                  {saving > 0 && (
-                    <div style={{background:analysis.verdict==="overcharged"?"#fff5f5":"#fffbeb",border:analysis.verdict==="overcharged"?"2px solid #fca5a5":"2px solid #fcd34d",borderRadius:14,padding:"16px 20px",marginBottom:18,textAlign:"center"}}>
-                      <p style={{fontSize:24,fontWeight:900,color:analysis.verdict==="overcharged"?"#dc2626":"#b45309",letterSpacing:"-0.5px",marginBottom:4}}>You could save ~{fmtCost(saving)} per {periodLower === "quarterly" ? "quarter" : periodLower === "monthly" ? "month" : "year"}</p>
-                      {periodLower !== "annual" && <p style={{fontSize:14,fontWeight:700,color:analysis.verdict==="overcharged"?"#ef4444":"#d97706"}}>That is ~{fmtCost(annualSaving)} per year</p>}
-                    </div>
-                  )}
-
-                  <div style={{position:"relative",marginBottom:12}}>
-                    <div style={{background:"#f1f5f9",borderRadius:8,height:40,position:"relative",overflow:"visible"}}>
-                      <div style={{position:"absolute",left:0,width:bestPct+"%",height:40,background:"#dcfce7",borderRadius:"8px 0 0 8px"}}></div>
-                      <div style={{position:"absolute",left:bestPct+"%",width:Math.max(avgPct-bestPct,0)+"%",height:40,background:"#fef3c7"}}></div>
-                      <div style={{position:"absolute",left:avgPct+"%",width:Math.max(100-avgPct,0)+"%",height:40,background:"#fee2e2",borderRadius:"0 8px 8px 0"}}></div>
-
-                      <div style={{position:"absolute",left:bestPct+"%",top:-2,width:3,height:44,background:"#10b981",borderRadius:2,zIndex:3}}></div>
-                      <div style={{position:"absolute",left:avgPct+"%",top:-2,width:3,height:44,background:"#f59e0b",borderRadius:2,zIndex:3}}></div>
-                      <div style={{position:"absolute",left:userPct+"%",top:-6,width:4,height:52,background:analysis.verdict==="overcharged"?"#dc2626":analysis.verdict==="fair"?"#b45309":"#15803d",borderRadius:2,zIndex:4}}></div>
-                      <div style={{position:"absolute",left:userPct+"%",top:-22,transform:"translateX(-50%)",background:analysis.verdict==="overcharged"?"#dc2626":analysis.verdict==="fair"?"#b45309":"#15803d",color:"#fff",padding:"2px 8px",borderRadius:6,fontSize:11,fontWeight:700,whiteSpace:"nowrap",zIndex:5}}>You are here</div>
-                    </div>
-                  </div>
-
-                  <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:12}}>
-                    <div>
-                      <span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#10b981",marginRight:5,verticalAlign:"middle"}}></span>
-                      <span style={{fontSize:12,color:"#0f172a",fontWeight:700}}>Best available</span>
-                      <span style={{fontSize:12,color:"#64748b",marginLeft:4}}>{fmtCost(bestVal)}</span>
-                    </div>
-                    <div>
-                      <span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:"#f59e0b",marginRight:5,verticalAlign:"middle"}}></span>
-                      <span style={{fontSize:12,color:"#0f172a",fontWeight:700}}>State avg</span>
-                      <span style={{fontSize:12,color:"#64748b",marginLeft:4}}>{fmtCost(avgVal)}</span>
-                    </div>
-                    <div>
-                      <span style={{display:"inline-block",width:10,height:10,borderRadius:2,background:analysis.verdict==="overcharged"?"#dc2626":analysis.verdict==="fair"?"#b45309":"#15803d",marginRight:5,verticalAlign:"middle"}}></span>
-                      <span style={{fontSize:12,color:"#0f172a",fontWeight:700}}>Your bill</span>
-                      <span style={{fontSize:12,color:"#64748b",marginLeft:4}}>{fmtCost(userVal)}</span>
-                    </div>
-                  </div>
-
-                  <div style={{fontSize:11,color:"#94a3b8",lineHeight:1.6}}>
-                    <p style={{marginBottom:4}}><strong style={{color:"#64748b"}}>State avg</strong> — the maximum price your retailer is allowed to charge under the government Default Market Offer.</p>
-                    <p style={{marginBottom:4}}><strong style={{color:"#64748b"}}>Best available</strong> — cheapest current market offer for {tariffDesc} in your area.</p>
-                    {pc.referenceNote && <p>{pc.referenceNote}</p>}
-                  </div>
-                </div>
-              );
-            })()}
-
+            {/* 4. Usage profile */}
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:8,color:"#0f172a"}}>Usage profile: <span style={{color:"#10b981"}}>{analysis.usageLabel}</span></p>
               <p style={{fontSize:15,color:"#475569",lineHeight:1.75}}>{analysis.usageInsight}</p>
             </div>
 
+            {/* 5. Solar insight */}
             {analysis.solarInsight&&(
               <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:16,padding:24,marginBottom:16}}>
                 <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#92400e"}}>Solar feed-in: {analysis.solarFitRate}</p>
@@ -462,6 +458,7 @@ export default function BillApp({ landingContent }) {
               </div>
             )}
 
+            {/* 6. What to do right now */}
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:14,color:"#0f172a"}}>What to do right now</p>
               {(analysis.savingsActions||[]).map(function(action,i,arr){
@@ -477,6 +474,7 @@ export default function BillApp({ landingContent }) {
               })}
             </div>
 
+            {/* 7. Retailers worth considering */}
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:8,color:"#0f172a"}}>Retailers worth considering</p>
               {analysis.retailerRationale&&<p style={{fontSize:14,color:"#64748b",marginBottom:14,paddingBottom:12,borderBottom:"1px solid #f1f5f9",lineHeight:1.7}}>{analysis.retailerRationale}</p>}
@@ -499,6 +497,22 @@ export default function BillApp({ landingContent }) {
               </div>
             </div>
 
+            {/* 8. Touchpoint 2 — full consent card (hidden if already contributed) */}
+            {showConsent && !contributed && (
+              <div style={{background:"linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%)",borderRadius:20,padding:"28px 28px 24px",marginBottom:16,position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:0,right:0,width:120,height:120,background:"#10b981",borderRadius:"0 0 0 120px",opacity:0.1}}></div>
+                <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help build Australia's first independent electricity pricing index</p>
+                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>Energy companies know what everyone pays. You don't. Share your bill data to help change that. Your name and account details are never included — only pricing data.</p>
+                <div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+                  <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 24px",fontWeight:700,fontSize:15,cursor:"pointer"}}>
+                    Count me in
+                  </button>
+                  <span style={{fontSize:13,color:"#64748b"}}>47 Australians have shared so far</span>
+                </div>
+              </div>
+            )}
+
+            {/* 9. Email notification signup */}
             {!emailDone ? (
               <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:16,padding:"24px 24px 20px",marginBottom:16,textAlign:"center"}}>
                 <p style={{fontWeight:800,fontSize:18,color:"#0f172a",marginBottom:6}}>Want a heads-up when better rates appear?</p>
@@ -518,17 +532,20 @@ export default function BillApp({ landingContent }) {
               </div>
             )}
 
+            {/* 10. Disclaimer */}
             <div style={{background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:12,padding:16,marginBottom:20}}>
               <p style={{fontSize:11,color:"#94a3b8",lineHeight:1.7}}>This analysis is based on AI reading of your bill. Savings estimates are indicative only. Always read the Basic Plan Information Document before switching. BillDecoder.au is independent and does not receive commissions from any retailer listed.</p>
             </div>
 
+            {/* 11. Analyse another bill */}
             <div style={{textAlign:"center",paddingBottom:16}}>
               <button onClick={reset} style={{background:"none",border:"1px solid #e2e8f0",borderRadius:10,padding:"11px 24px",color:"#64748b",cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}}>
                 Analyse another bill
               </button>
             </div>
           </div>
-        )}
+          );
+        })()}
       </main>
 
       {phase === "upload" && landingContent}
