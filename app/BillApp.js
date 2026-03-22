@@ -40,6 +40,33 @@ const STATE_INSIGHTS = {
   default:{stat:"~$380/year",fact:"Average amount Australian households overpay before comparing plans."}
 };
 
+var TERM_TIPS = {
+  "Flat Rate":"You pay the same price per kWh no matter when you use power.",
+  "Time of Use":"Peak times cost more, off-peak costs less — when you use power matters.",
+  "Controlled Load":"A cheaper rate for things like hot water systems on a separate meter.",
+  "Unknown":"Your tariff type could not be determined from this bill.",
+  "supply charge":"The daily fee just for being connected, regardless of how much electricity you use.",
+  "feed-in":"What your retailer pays you per kWh for solar energy you export back to the grid.",
+  "DMO":"Default Market Offer — the government price cap used as the benchmark for your area.",
+  "standing offer":"The default expensive plan you end up on if you have never compared or switched.",
+  "off-peak":"Cheaper time periods, usually overnight and weekends.",
+  "shoulder":"Mid-price periods between peak and off-peak, common on Time of Use tariffs.",
+  "peak":"The most expensive time period, usually weekday afternoons and evenings.",
+  "demand charge":"A fee based on your highest usage at any point, common for business accounts."
+};
+
+function tipFor(text) {
+  if (!text) return null;
+  var lower = text.toLowerCase();
+  var keys = Object.keys(TERM_TIPS);
+  for (var i = 0; i < keys.length; i++) {
+    if (lower.indexOf(keys[i].toLowerCase()) !== -1) {
+      return TERM_TIPS[keys[i]];
+    }
+  }
+  return null;
+}
+
 export default function BillApp({ landingContent }) {
   const [phase, setPhase] = useState("upload");
   const [analysis, setAnalysis] = useState(null);
@@ -299,14 +326,48 @@ export default function BillApp({ landingContent }) {
               </div>
             </div>
 
+            {showConsent && !contributed && (
+              <div style={{background:"linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%)",borderRadius:20,padding:"28px 28px 24px",marginBottom:16,position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:0,right:0,width:120,height:120,background:"#10b981",borderRadius:"0 0 0 120px",opacity:0.1}}></div>
+                <p style={{fontSize:13,fontWeight:700,color:"#10b981",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Your data can make a difference</p>
+                <p style={{fontSize:20,fontWeight:900,color:"#fff",lineHeight:1.3,marginBottom:10}}>Help us build Australia's most honest picture of electricity pricing</p>
+                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:6}}>Right now, energy companies know exactly what everyone pays. Consumers don't. That's how overcharging stays hidden.</p>
+                <p style={{fontSize:14,color:"#94a3b8",lineHeight:1.7,marginBottom:16}}>By contributing your anonymised bill data, you help build the <strong style={{color:"#fff"}}>BillDecoder Index</strong> — a free, public dataset that shows what Australians actually pay for electricity, state by state. The more people contribute, the harder it becomes for retailers to quietly overcharge.</p>
+                <div style={{background:"rgba(255,255,255,0.08)",borderRadius:12,padding:"12px 16px",marginBottom:16}}>
+                  <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Completely anonymised</span>
+                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} No name or address stored</span>
+                    <span style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#86efac"}}>{"\u2713"} Takes one click</span>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                  <button onClick={contributeData} style={{background:"#10b981",color:"#fff",border:"none",borderRadius:10,padding:"13px 24px",fontWeight:700,fontSize:15,cursor:"pointer"}}>
+                    Yes, contribute my data
+                  </button>
+                  <button onClick={function(){setShowConsent(false);}} style={{background:"transparent",color:"#64748b",border:"1px solid #334155",borderRadius:10,padding:"13px 24px",fontWeight:600,fontSize:14,cursor:"pointer"}}>
+                    No thanks
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {contributed && (
+              <div style={{background:"#f0fdf4",border:"2px solid #86efac",borderRadius:16,padding:"20px 24px",marginBottom:16,textAlign:"center"}}>
+                <p style={{fontWeight:800,fontSize:17,color:"#15803d",marginBottom:4}}>Thank you — you are making a difference</p>
+                <p style={{fontSize:13,color:"#166534"}}>Your anonymised data has been added to the <a href="/bill-index" style={{color:"#15803d",fontWeight:700}}>BillDecoder Index</a>.</p>
+              </div>
+            )}
+
             <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
               <p style={{fontWeight:700,fontSize:15,marginBottom:12,color:"#0f172a"}}>Your bill, decoded</p>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10}}>
-                {[{l:"Tariff type",v:analysis.tariffType,n:analysis.peakOffPeakTimes},{l:"Usage rate",v:analysis.usageRateSummary},{l:"Daily supply charge",v:analysis.dailySupplyCharge,n:analysis.supplyChargeNote},{l:"Retailer",v:analysis.retailer}].map(function(f,i){
+                {[{l:"Tariff type",v:analysis.tariffType,n:analysis.peakOffPeakTimes,t:true},{l:"Usage rate",v:analysis.usageRateSummary},{l:"Daily supply charge",v:analysis.dailySupplyCharge,n:analysis.supplyChargeNote,t:true},{l:"Retailer",v:analysis.retailer}].map(function(f,i){
+                  var tip = f.t ? tipFor(f.v || f.l) : null;
                   return (
                     <div key={i} style={{background:"#f8fafc",borderRadius:10,padding:"12px 14px"}}>
                       <p style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>{f.l}</p>
-                      <p style={{fontSize:15,fontWeight:700,color:"#0f172a",marginBottom:f.n?4:0}}>{f.v||"\u2014"}</p>
+                      <p style={{fontSize:15,fontWeight:700,color:"#0f172a",marginBottom:(f.n||tip)?4:0}}>{f.v||"\u2014"}</p>
+                      {tip&&<p style={{fontSize:11,color:"#10b981",lineHeight:1.4,fontStyle:"italic",marginBottom:f.n?4:0}}>{tip}</p>}
                       {f.n&&<p style={{fontSize:11,color:"#64748b",lineHeight:1.4}}>{f.n}</p>}
                     </div>
                   );
@@ -325,7 +386,8 @@ export default function BillApp({ landingContent }) {
               ];
               return (
                 <div style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:16,padding:24,marginBottom:16}}>
-                  <p style={{fontWeight:700,fontSize:15,marginBottom:14,color:"#0f172a"}}>How your bill compares{pc.postcode ? " \u2014 "+pc.postcode+", "+analysis.state : ""}</p>
+                  <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#0f172a"}}>How your bill compares{pc.postcode ? " \u2014 "+pc.postcode+", "+analysis.state : ""}</p>
+                  <p style={{fontSize:11,color:"#94a3b8",fontStyle:"italic",marginBottom:14}}>All figures are annual estimates. DMO = Default Market Offer, the government-set price cap for your area.</p>
                   <div style={{display:"flex",flexDirection:"column",gap:12}}>
                     {bars.map(function(bar,i) {
                       var pct = Math.round((bar.value / maxCost) * 100);
@@ -352,7 +414,8 @@ export default function BillApp({ landingContent }) {
 
             {analysis.solarInsight&&(
               <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:16,padding:24,marginBottom:16}}>
-                <p style={{fontWeight:700,fontSize:15,marginBottom:8,color:"#92400e"}}>Solar feed-in: {analysis.solarFitRate}</p>
+                <p style={{fontWeight:700,fontSize:15,marginBottom:4,color:"#92400e"}}>Solar feed-in: {analysis.solarFitRate}</p>
+                <p style={{fontSize:11,color:"#b45309",fontStyle:"italic",marginBottom:8}}>Feed-in tariff — what your retailer pays you per kWh for solar you export to the grid.</p>
                 <p style={{fontSize:15,color:"#78350f",lineHeight:1.75}}>{analysis.solarInsight}</p>
               </div>
             )}
@@ -410,27 +473,6 @@ export default function BillApp({ landingContent }) {
             ) : (
               <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:16,padding:20,marginBottom:16,textAlign:"center"}}>
                 <p style={{fontWeight:700,color:"#15803d",fontSize:16}}>You are on the list</p>
-              </div>
-            )}
-
-            {contributed && (
-              <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:16,padding:20,marginBottom:16,textAlign:"center"}}>
-                <p style={{fontWeight:700,color:"#15803d",fontSize:16}}>Thanks — your anonymised data has been added to the <a href="/bill-index" style={{color:"#15803d"}}>BillDecoder Index</a>.</p>
-              </div>
-            )}
-
-            {showConsent && !contributed && (
-              <div style={{background:"#fff",border:"2px solid #bfdbfe",borderRadius:16,padding:"24px 24px 20px",marginBottom:16}}>
-                <p style={{fontWeight:800,fontSize:17,color:"#0f172a",marginBottom:12}}>Help make energy prices fairer for all Australians</p>
-                <p style={{fontSize:14,color:"#475569",lineHeight:1.7,marginBottom:16}}>We would like to add your anonymised bill data to our Australian Bill Decoder Index. Your name, address and account details are never stored.</p>
-                <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                  <button onClick={contributeData} style={{background:"#1e40af",color:"#fff",border:"none",borderRadius:10,padding:"11px 22px",fontWeight:700,fontSize:14,cursor:"pointer"}}>
-                    Yes, contribute my anonymised data
-                  </button>
-                  <button onClick={function(){setShowConsent(false);}} style={{background:"#f8fafc",color:"#64748b",border:"1px solid #e2e8f0",borderRadius:10,padding:"11px 22px",fontWeight:600,fontSize:14,cursor:"pointer"}}>
-                    No thanks
-                  </button>
-                </div>
               </div>
             )}
 
