@@ -256,8 +256,8 @@ export default function BillApp({ landingContent }) {
               <h1 style={{fontSize:"clamp(28px,5vw,38px)",fontWeight:900,letterSpacing:"-1.5px",lineHeight:1.15,marginBottom:12,color:"#0f172a"}}>
                 Your electricity bill, <span style={{color:"#10b981"}}>decoded in 60 seconds.</span>
               </h1>
-              <p style={{fontSize:16,color:"#64748b",maxWidth:420,margin:"0 auto",lineHeight:1.7}}>
-                Upload your bill and get a plain-English verdict. Free. Independent. No affiliate commissions.
+              <p style={{fontSize:16,color:"#64748b",maxWidth:440,margin:"0 auto",lineHeight:1.7}}>
+                Other sites make you fill in forms and understand your bill first. Just upload a photo — we do the rest.
               </p>
             </div>
             <label style={{border:"2px dashed #cbd5e1",borderRadius:20,padding:"48px 24px",textAlign:"center",cursor:"pointer",background:"#fff",display:"block",marginBottom:16}}>
@@ -271,6 +271,21 @@ export default function BillApp({ landingContent }) {
               <p style={{color:"#64748b",fontSize:14,marginBottom:20}}>PDF, photo or screenshot — any Aussie retailer, any state</p>
               <span style={{background:"#0f172a",color:"#fff",borderRadius:12,padding:"13px 32px",fontWeight:700,fontSize:15,display:"inline-block"}}>Choose a file</span>
             </label>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12,marginBottom:20}}>
+              {[
+                {icon:"\u{1F4F7}",h:"No forms to fill in",t:"Just upload a photo. AI reads your bill so you don't have to."},
+                {icon:"\u{1F6AB}",h:"No commissions",t:"We don't get paid by retailers. Our recommendations are independent."},
+                {icon:"\u{1F4AC}",h:"No jargon",t:"Everything explained in plain English. No kWh, no NMI, no confusion."}
+              ].map(function(d,i){
+                return (
+                  <div key={i} style={{background:"#fff",border:"1px solid #e2e8f0",borderRadius:14,padding:"18px 16px",textAlign:"center"}}>
+                    <p style={{fontSize:22,marginBottom:8}}>{d.icon}</p>
+                    <p style={{fontWeight:700,fontSize:14,color:"#0f172a",marginBottom:4}}>{d.h}</p>
+                    <p style={{fontSize:13,color:"#64748b",lineHeight:1.5}}>{d.t}</p>
+                  </div>
+                );
+              })}
+            </div>
             <div style={{display:"flex",justifyContent:"center",gap:20,flexWrap:"wrap",marginBottom:28}}>
               {["Bill never stored","No account needed","Built for Australians"].map(function(t,i){
                 return <span key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#64748b"}}><span style={{color:"#10b981"}}>{"\u2713"}</span> {t}</span>;
